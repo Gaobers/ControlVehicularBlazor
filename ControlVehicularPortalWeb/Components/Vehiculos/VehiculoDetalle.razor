@@ -1,0 +1,109 @@
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="details-card">
+
+    <div class="details-header">
+
+        <div>
+            <h2>Detalle del vehículo</h2>
+            <p>Registro #@Vehiculo.Id</p>
+        </div>
+
+        <button type="button"
+                class="btn-close-custom"
+                @onclick="Cerrar">
+            Cerrar
+        </button>
+
+    </div>
+
+    <div class="details-grid">
+
+        <div>
+            <label>Propietario ID</label>
+            <strong>@Vehiculo.PropietarioId</strong>
+        </div>
+
+        <div>
+            <label>Marca</label>
+            <strong>@Vehiculo.Marca</strong>
+        </div>
+
+        <div>
+            <label>Modelo</label>
+            <strong>@Vehiculo.Modelo</strong>
+        </div>
+
+        <div>
+            <label>Año</label>
+            <strong>@Vehiculo.Anio</strong>
+        </div>
+
+        <div>
+            <label>Placa</label>
+            <strong>@Vehiculo.Placa</strong>
+        </div>
+
+        <div>
+            <label>Color</label>
+            <strong>
+                @(Vehiculo.Color ?? "No especificado")
+            </strong>
+        </div>
+
+        <div>
+            <label>Kilometraje</label>
+            <strong>
+                @Vehiculo.KilometrajeActual.ToString("N0") km
+            </strong>
+        </div>
+
+        <div>
+            <label>VIN</label>
+            <strong>
+                @(Vehiculo.Vin ?? "No especificado")
+            </strong>
+        </div>
+
+        <div>
+            <label>Motor</label>
+            <strong>
+                @(Vehiculo.Motor ?? "No especificado")
+            </strong>
+        </div>
+
+        <div>
+            <label>Estado</label>
+            <strong>@Vehiculo.Estado</strong>
+        </div>
+
+        <div>
+            <label>Fecha de registro</label>
+            <strong>
+                @(Vehiculo.FechaRegistro?
+                    .ToString("dd/MM/yyyy HH:mm")
+                    ?? "No disponible")
+            </strong>
+        </div>
+
+        <div>
+            <label>Última actualización</label>
+            <strong>
+                @(Vehiculo.FechaActualizacion?
+                    .ToString("dd/MM/yyyy HH:mm")
+                    ?? "No disponible")
+            </strong>
+        </div>
+
+    </div>
+
+</section>
+
+@code {
+
+    [Parameter]
+    public VehiculoSalidaDTO Vehiculo { get; set; } = new();
+
+    [Parameter]
+    public EventCallback Cerrar { get; set; }
+}

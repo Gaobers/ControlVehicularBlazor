@@ -1,0 +1,134 @@
+@page "/vehiculos"
+
+@using ControlVehicular.DTO.Vehiculos
+@using ControlVehicularPortalWeb.Components.Vehiculos
+
+
+<PageTitle>Vehículos | Control Vehicular</PageTitle>
+
+<div class="vehiculos-page">
+
+    <!-- ENCABEZADO -->
+
+    <div class="page-header">
+        <div>
+            <span class="page-label">CONTROL VEHICULAR</span>
+
+            <h1>Gestión de Vehículos</h1>
+
+            <p>
+                Administra la información de los vehículos
+                registrados en el sistema.
+            </p>
+        </div>
+
+        @if (autenticado)
+        {
+            <div class="header-actions">
+
+                <button type="button"
+                        class="btn-refresh"
+                        disabled="@cargando"
+                        @onclick="CargarVehiculosAsync">
+                    Actualizar
+                </button>
+
+                <button type="button"
+                        class="btn-primary-custom"
+                        disabled="@guardando"
+                        @onclick="AbrirRegistro">
+                    + Registrar vehículo
+                </button>
+
+            </div>
+        }
+    </div>
+
+    @if (!autenticado)
+    {
+        <div class="message-card">
+
+            <h3>Acceso restringido</h3>
+
+            <p>
+                Debes iniciar sesión para administrar vehículos.
+            </p>
+
+            <button type="button"
+                    class="btn-primary-custom"
+                    @onclick="IrALogin">
+                Iniciar sesión
+            </button>
+
+        </div>
+    }
+    else
+    {
+        var vehiculosFiltrados = VehiculosFiltrados;
+
+        <!-- MENSAJES GENERALES -->
+
+        @if (!string.IsNullOrWhiteSpace(errorMensaje))
+        {
+            <div class="error-message" role="alert">
+                @errorMensaje
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(exitoMensaje))
+        {
+            <div class="success-alert" role="status">
+                @exitoMensaje
+            </div>
+        }
+
+        <VehiculoResumen Vehiculos="vehiculos" />
+
+        @if (mostrarFormulario)
+        {
+            <VehiculoFormulario Formulario="formulario"
+                                IdEdicion="idEdicion"
+                                Guardando="guardando"
+                                @bind-EstadoEdicion="estadoEdicion"
+                                Guardar="GuardarVehiculoAsync"
+                                Cancelar="CancelarFormulario" />
+        }
+
+        <section class="table-card">
+            <div class="table-header">
+                <div>
+                    <h2>Vehículos registrados</h2>
+                    <p>Información obtenida desde la API Java.</p>
+                </div>
+            </div>
+
+            <VehiculoFiltros @bind-Busqueda="busqueda"
+                             @bind-FiltroEstado="filtroEstado" />
+
+            <VehiculoTabla Vehiculos="vehiculosFiltrados"
+                            Cargando="cargando"
+                            Guardando="guardando"
+                            VerDetalle="VerDetalleAsync"
+                            Editar="AbrirEdicion"
+                            Archivar="SolicitarArchivado" />
+
+            <div class="table-footer">
+                Mostrando @vehiculosFiltrados.Count de @vehiculos.Count vehículos
+            </div>
+        </section>
+
+        @if (idPendienteArchivar.HasValue)
+        {
+            <VehiculoConfirmacion Vehiculo="VehiculoPorArchivar"
+                                   Archivando="archivando"
+                                   Confirmar="ConfirmarArchivadoAsync"
+                                   Cancelar="CancelarArchivado" />
+        }
+
+        @if (vehiculoSeleccionado != null)
+        {
+            <VehiculoDetalle Vehiculo="vehiculoSeleccionado"
+                             Cerrar="CerrarDetalle" />
+        }
+    }
+</div>

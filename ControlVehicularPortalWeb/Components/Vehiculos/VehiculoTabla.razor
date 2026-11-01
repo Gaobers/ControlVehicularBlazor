@@ -1,0 +1,150 @@
+@using ControlVehicular.DTO.Vehiculos
+
+@if (Cargando)
+{
+    <div class="table-message">
+        <p>Cargando vehículos...</p>
+    </div>
+}
+else if (!Vehiculos.Any())
+{
+    <div class="table-message">
+
+        <h3>No se encontraron vehículos</h3>
+
+        <p>
+            No existen registros que coincidan
+            con los filtros seleccionados.
+        </p>
+
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+
+        <table class="vehicles-table">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vehículo</th>
+                    <th>Año</th>
+                    <th>Placa</th>
+                    <th>Kilometraje</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var vehiculo in Vehiculos)
+                {
+                    <tr>
+
+                        <td>#@vehiculo.Id</td>
+
+                        <td>
+                            <div class="vehicle-name">
+                                <strong>
+                                    @vehiculo.Marca
+                                    @vehiculo.Modelo
+                                </strong>
+
+                                <span>
+                                    @(vehiculo.Color ?? "Sin color")
+                                </span>
+                            </div>
+                        </td>
+
+                        <td>@vehiculo.Anio</td>
+
+                        <td>
+                            <span class="plate">
+                                @vehiculo.Placa
+                            </span>
+                        </td>
+
+                        <td>
+                            @vehiculo.KilometrajeActual.ToString("N0") km
+                        </td>
+
+                        <td>
+
+                            @if (vehiculo.Estado == EstadoVehiculo.ACTIVO)
+                            {
+                                <span class="status status-active">
+                                    Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="status status-archived">
+                                    Archivado
+                                </span>
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <div class="row-actions">
+
+                                <button type="button"
+                                        class="btn-details"
+                                        @onclick="() => VerDetalle.InvokeAsync(vehiculo.Id)">
+                                    Ver
+                                </button>
+
+                                <button type="button"
+                                        class="btn-edit"
+                                        disabled="@Guardando"
+                                        @onclick="() => Editar.InvokeAsync(vehiculo)">
+                                    Editar
+                                </button>
+
+                                @if (vehiculo.Estado == EstadoVehiculo.ACTIVO)
+                                {
+                                    <button type="button"
+                                            class="btn-archive"
+                                            disabled="@Guardando"
+                                            @onclick="() => Archivar.InvokeAsync(vehiculo.Id)">
+                                        Archivar
+                                    </button>
+                                }
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = Array.Empty<VehiculoSalidaDTO>();
+
+    [Parameter]
+    public bool Cargando { get; set; }
+
+    [Parameter]
+    public bool Guardando { get; set; }
+
+    [Parameter]
+    public EventCallback<long> VerDetalle { get; set; }
+
+    [Parameter]
+    public EventCallback<VehiculoSalidaDTO> Editar { get; set; }
+
+    [Parameter]
+    public EventCallback<long> Archivar { get; set; }
+}

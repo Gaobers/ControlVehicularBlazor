@@ -1,0 +1,139 @@
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.vehicles-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+}
+
+.vehicles-table thead {
+    background: #f8fafc;
+}
+
+.vehicles-table th {
+    text-align: left;
+    padding: 15px 20px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.vehicles-table td {
+    padding: 17px 20px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 13px;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.vehicles-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.vehicle-name {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.vehicle-name strong {
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.vehicle-name span {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.plate {
+    font-weight: 650;
+    color: #334155;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 11px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-archived {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.btn-details,
+.btn-edit,
+.btn-archive {
+    border: none;
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-details {
+    background: #eff6ff;
+    color: #0369a1;
+}
+
+.btn-details:hover {
+    background: #dbeafe;
+}
+
+.btn-edit {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.btn-edit:hover {
+    background: #fde68a;
+}
+
+.btn-archive {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.btn-archive:hover {
+    background: #fecaca;
+}
+
+.table-message {
+    text-align: center;
+    padding: 55px 20px;
+    color: #64748b;
+}
+
+.table-message h3 {
+    color: #334155;
+    font-size: 17px;
+}
+
+.row-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+

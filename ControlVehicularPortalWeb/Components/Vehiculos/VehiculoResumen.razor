@@ -1,0 +1,35 @@
+@using ControlVehicular.DTO.Vehiculos
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <span>Total de vehículos</span>
+        <strong>@Vehiculos.Count</strong>
+        <small>Registros consultados</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Vehículos activos</span>
+        <strong>
+            @Vehiculos.Count(v =>
+                v.Estado == EstadoVehiculo.ACTIVO)
+        </strong>
+        <small>Estado activo</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Vehículos archivados</span>
+        <strong>
+            @Vehiculos.Count(v =>
+                v.Estado == EstadoVehiculo.ARCHIVADO)
+        </strong>
+        <small>Estado archivado</small>
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = Array.Empty<VehiculoSalidaDTO>();
+}

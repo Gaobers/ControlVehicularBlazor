@@ -1,0 +1,58 @@
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="archive-confirmation">
+
+    <h3>¿Archivar vehículo?</h3>
+
+    <p>
+        Estás a punto de archivar el vehículo
+        <strong>
+            @(Vehiculo?.Marca)
+            @(Vehiculo?.Modelo)
+        </strong>.
+    </p>
+
+    <p>
+        Esta operación utilizará el endpoint DELETE
+        de la API Java y cambiará el estado del
+        registro según las reglas del backend.
+    </p>
+
+    <div class="confirmation-actions">
+
+        <button type="button"
+                class="btn-cancel"
+                disabled="@Archivando"
+                @onclick="Cancelar">
+            Cancelar
+        </button>
+
+        <button type="button"
+                class="btn-confirm-archive"
+                disabled="@Archivando"
+                @onclick="Confirmar">
+
+            @(Archivando
+                ? "Archivando..."
+                : "Confirmar archivado")
+
+        </button>
+
+    </div>
+
+</section>
+
+@code {
+
+    [Parameter]
+    public VehiculoSalidaDTO? Vehiculo { get; set; }
+
+    [Parameter]
+    public bool Archivando { get; set; }
+
+    [Parameter]
+    public EventCallback Confirmar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+}

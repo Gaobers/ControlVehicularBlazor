@@ -1,0 +1,37 @@
+@using ControlVehicular.DTO.Vehiculos
+
+<div class="filters-container">
+
+    <input type="text"
+           class="search-input"
+           placeholder="Buscar marca, modelo o placa..."
+           @bind:get="Busqueda"
+           @bind:set="BusquedaChanged.InvokeAsync"
+           @bind:event="oninput" />
+
+    <select class="filter-select"
+            @bind:get="FiltroEstado"
+            @bind:set="FiltroEstadoChanged.InvokeAsync">
+
+        <option value="TODOS">Todos los estados</option>
+        <option value="ACTIVO">Activos</option>
+        <option value="ARCHIVADO">Archivados</option>
+
+    </select>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public string Busqueda { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> BusquedaChanged { get; set; }
+
+    [Parameter]
+    public string FiltroEstado { get; set; } = "TODOS";
+
+    [Parameter]
+    public EventCallback<string> FiltroEstadoChanged { get; set; }
+}

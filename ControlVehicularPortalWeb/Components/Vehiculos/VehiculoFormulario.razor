@@ -1,0 +1,274 @@
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="vehicle-form-card">
+
+    <div class="form-card-header">
+
+        <div>
+            <h2>
+                @(IdEdicion.HasValue
+                    ? "Modificar vehículo"
+                    : "Registrar vehículo")
+            </h2>
+
+            <p>
+                @(IdEdicion.HasValue
+                    ? "Actualiza la información del vehículo seleccionado."
+                    : "Completa los datos para registrar un nuevo vehículo.")
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn-close-custom"
+                disabled="@Guardando"
+                @onclick="Cancelar">
+            Cerrar
+        </button>
+
+    </div>
+
+    <EditForm Model="@Formulario"
+              OnValidSubmit="Guardar"
+              FormName="formVehiculo"
+              @key="Formulario">
+
+        <DataAnnotationsValidator />
+
+        <div class="vehicle-form-grid">
+
+            <!-- PROPIETARIO -->
+
+            <div class="field-group">
+
+                <label>Propietario ID *</label>
+
+                <InputNumber class="vehicle-input"
+                             min="1"
+                             disabled="@IdEdicion.HasValue"
+                             @bind-Value="Formulario.PropietarioId" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.PropietarioId)" />
+
+                @if (IdEdicion.HasValue)
+                {
+                    <small>
+                        El propietario no puede modificarse
+                        desde este Formulario.
+                    </small>
+                }
+
+            </div>
+
+            <!-- MARCA -->
+
+            <div class="field-group">
+
+                <label>Marca *</label>
+
+                <InputText class="vehicle-input"
+                           placeholder="Ej. Toyota"
+                           maxlength="80"
+                           @bind-Value="Formulario.Marca" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Marca)" />
+
+            </div>
+
+            <!-- MODELO -->
+
+            <div class="field-group">
+
+                <label>Modelo *</label>
+
+                <InputText class="vehicle-input"
+                           placeholder="Ej. Corolla"
+                           maxlength="100"
+                           @bind-Value="Formulario.Modelo" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Modelo)" />
+
+            </div>
+
+            <!-- AÑO -->
+
+            <div class="field-group">
+
+                <label>Año *</label>
+
+                <InputNumber class="vehicle-input"
+                             min="1900"
+                             max="2200"
+                             @bind-Value="Formulario.Anio" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Anio)" />
+
+            </div>
+
+            <!-- PLACA -->
+
+            <div class="field-group">
+
+                <label>Placa *</label>
+
+                <InputText class="vehicle-input"
+                           placeholder="Ej. P123456"
+                           maxlength="20"
+                           @bind-Value="Formulario.Placa" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Placa)" />
+
+            </div>
+
+            <!-- COLOR -->
+
+            <div class="field-group">
+
+                <label>Color</label>
+
+                <InputText class="vehicle-input"
+                           placeholder="Ej. Blanco"
+                           maxlength="60"
+                           @bind-Value="Formulario.Color" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Color)" />
+
+            </div>
+
+            <!-- KILOMETRAJE -->
+
+            <div class="field-group">
+
+                <label>Kilometraje actual *</label>
+
+                <InputNumber class="vehicle-input"
+                             min="0"
+                             step="any"
+                             @bind-Value="Formulario.KilometrajeActual" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.KilometrajeActual)" />
+
+            </div>
+
+            <!-- VIN -->
+
+            <div class="field-group">
+
+                <label>VIN</label>
+
+                <InputText class="vehicle-input"
+                           placeholder="Número de identificación"
+                           maxlength="50"
+                           @bind-Value="Formulario.Vin" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Vin)" />
+
+            </div>
+
+            <!-- MOTOR -->
+
+            <div class="field-group">
+
+                <label>Motor</label>
+
+                <InputText class="vehicle-input"
+                           placeholder="Descripción del motor"
+                           maxlength="150"
+                           @bind-Value="Formulario.Motor" />
+
+                <ValidationMessage
+                    For="@(() => Formulario.Motor)" />
+
+            </div>
+
+            <!-- ESTADO SOLO EN EDICIÓN -->
+
+            @if (IdEdicion.HasValue)
+            {
+                <div class="field-group">
+
+                    <label>Estado del vehículo *</label>
+
+                    <InputSelect class="vehicle-input"
+                                 @bind-Value:get="EstadoEdicion"
+                                 @bind-Value:set="EstadoEdicionChanged">
+
+                        <option value="ACTIVO">
+                            ACTIVO
+                        </option>
+
+                        <option value="ARCHIVADO">
+                            ARCHIVADO
+                        </option>
+
+                    </InputSelect>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="form-actions">
+
+            <button type="button"
+                    class="btn-cancel"
+                    disabled="@Guardando"
+                    @onclick="Cancelar">
+                Cancelar
+            </button>
+
+            <button type="submit"
+                    class="btn-primary-custom"
+                    disabled="@Guardando">
+
+                @if (Guardando)
+                {
+                    <span>Guardando...</span>
+                }
+                else
+                {
+                    <span>
+                        @(IdEdicion.HasValue
+                            ? "Guardar cambios"
+                            : "Registrar vehículo")
+                    </span>
+                }
+
+            </button>
+
+        </div>
+
+    </EditForm>
+
+</section>
+
+@code {
+
+    [Parameter]
+    public VehiculoGuardarDTO Formulario { get; set; } = new();
+
+    [Parameter]
+    public long? IdEdicion { get; set; }
+
+    [Parameter]
+    public bool Guardando { get; set; }
+
+    [Parameter]
+    public EstadoVehiculo EstadoEdicion { get; set; }
+
+    [Parameter]
+    public EventCallback<EstadoVehiculo> EstadoEdicionChanged { get; set; }
+
+    [Parameter]
+    public EventCallback Guardar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+}

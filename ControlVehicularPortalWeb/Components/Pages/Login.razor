@@ -1,0 +1,308 @@
+﻿
+@page "/login"
+@layout ControlVehicularPortalWeb.Components.Layout.LoginLayout
+
+@using ControlVehicular.DTO.Auth
+@using ControlVehicular.Services
+
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Iniciar sesión | Control Vehicular</PageTitle>
+
+<div class="login-page">
+
+    <div class="login-container">
+
+        <!-- PANEL INFORMATIVO -->
+
+        <aside class="login-info">
+
+            <div class="brand">
+                <div class="brand-icon">CV</div>
+
+                <div class="brand-text">
+                    <strong>Control Vehicular</strong>
+                    <span>Portal Web</span>
+                </div>
+            </div>
+
+            <div class="info-content">
+
+                <span class="info-tag">
+                    SISTEMA DE GESTIÓN
+                </span>
+
+                <h1>
+                    La administración de tus
+                    vehículos en un solo lugar.
+                </h1>
+
+                <p>
+                    Gestiona la información de tus
+                    vehículos desde una plataforma
+                    moderna, organizada y accesible.
+                </p>
+
+                <div class="info-features">
+
+                    <div class="feature">
+                        <span class="feature-dot"></span>
+                        Administración de vehículos
+                    </div>
+
+                    <div class="feature">
+                        <span class="feature-dot"></span>
+                        Seguimiento de kilometraje
+                    </div>
+
+                    <div class="feature">
+                        <span class="feature-dot"></span>
+                        Gestión de documentación
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="info-footer">
+                Control Vehicular · Portal Administrativo
+            </div>
+
+        </aside>
+
+
+        <!-- PANEL DE AUTENTICACIÓN -->
+
+        <main class="login-content">
+
+            <div class="login-form-container">
+
+                @if (autenticado)
+                {
+                    <div class="login-success" role="status">
+
+                        <div class="success-icon">✓</div>
+
+                        <h2>Sesión iniciada</h2>
+
+                        <p>
+                            Te has autenticado correctamente
+                            con la API de Control Vehicular.
+                        </p>
+
+                        <div class="success-message">
+                            La autenticación JWT
+                            se realizó correctamente.
+                        </div>
+
+                        <button type="button"
+                        class="login-button"
+                        @onclick="IrAVehiculos">
+
+                        Ir a Gestión de Vehículos →
+
+                        </button>
+
+                        <button type="button"
+                                class="logout-button"
+                                @onclick="CerrarSesion">
+
+                            Cerrar sesión
+
+                        </button>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="login-header">
+
+                        <span class="welcome-label">
+                            BIENVENIDO
+                        </span>
+
+                        <h2>Iniciar sesión</h2>
+
+                        <p>
+                            Ingresa tus credenciales para
+                            acceder al portal.
+                        </p>
+
+                    </div>
+
+                    <EditForm Model="@usuario"
+                              OnValidSubmit="IniciarSesionAsync"
+                              FormName="loginPortal">
+
+                        <DataAnnotationsValidator />
+
+                        <div class="form-group">
+
+                            <label for="correo">
+                                Correo electrónico
+                            </label>
+
+                            <InputText id="correo"
+                                       type="email"
+                                       class="form-input"
+                                       placeholder="correo@ejemplo.com"
+                                       autocomplete="username"
+                                       @bind-Value="usuario.Correo" />
+
+                            <ValidationMessage
+                                For="@(() => usuario.Correo)" />
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="clave">
+                                Contraseña
+                            </label>
+
+                            <InputText id="clave"
+                                       type="password"
+                                       class="form-input"
+                                       placeholder="Ingresa tu contraseña"
+                                       autocomplete="current-password"
+                                       @bind-Value="usuario.Clave" />
+
+                            <ValidationMessage
+                                For="@(() => usuario.Clave)" />
+
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(errorMensaje))
+                        {
+                            <div class="error-alert" role="alert">
+                                @errorMensaje
+                            </div>
+                        }
+
+                        <button type="submit"
+                                class="login-button"
+                                disabled="@cargando">
+
+                            @if (cargando)
+                            {
+                                <span>
+                                    Iniciando sesión...
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    Iniciar sesión
+                                </span>
+
+                                <span>→</span>
+                            }
+
+                        </button>
+
+                    </EditForm>
+
+                    <div class="login-bottom">
+
+                        <p>
+                            Acceso exclusivo para usuarios
+                            autorizados.
+                        </p>
+
+                    </div>
+                }
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+@code {
+
+    private UsuarioLoginDTO usuario = new();
+
+    private string? errorMensaje;
+
+    private bool cargando = false;
+
+    private bool autenticado = false;
+
+
+    // ==========================================
+    // VERIFICAR SESIÓN ACTUAL
+    // ==========================================
+
+    protected override void OnInitialized()
+    {
+        autenticado = AuthService.IsAuthenticated();
+    }
+
+
+    // ==========================================
+    // INICIAR SESIÓN
+    // ==========================================
+
+    private async Task IniciarSesionAsync()
+    {
+        if (cargando)
+            return;
+
+        cargando = true;
+
+        errorMensaje = null;
+
+        try
+        {
+            var resultado = await AuthService.LoginAsync(usuario);
+
+            if (!resultado)
+            {
+                errorMensaje = "Correo o contraseña incorrectos.";
+                return;
+            }
+
+            autenticado = true;
+
+            usuario.Clave = string.Empty;
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMensaje = ex.Message;
+        }
+        catch (Exception)
+        {
+            errorMensaje =
+                "Ocurrió un error al iniciar sesión. Intente nuevamente.";
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+
+    // ==========================================
+    // CERRAR SESIÓN
+    // ==========================================
+
+    private void CerrarSesion()
+    {
+        AuthService.Logout();
+
+        autenticado = false;
+
+        errorMensaje = null;
+
+        usuario = new UsuarioLoginDTO();
+    }
+
+    private void IrAVehiculos()
+    {
+        Navigation.NavigateTo("/vehiculos");
+    }
+
+}

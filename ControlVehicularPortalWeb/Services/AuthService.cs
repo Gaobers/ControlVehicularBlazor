@@ -1,4 +1,5 @@
-﻿using ControlVehicular.DTO.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
+using ControlVehicular.DTO.Auth;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -8,18 +9,24 @@ namespace ControlVehicular.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private string? _token;
+        private readonly AlmacenSesiones sesiones;
+        private readonly AuthenticationStateProvider estadoAutenticacion;
 
-        public AuthService(IHttpClientFactory httpClientFactory)
+        public AuthService(
+            IHttpClientFactory httpClientFactory,
+            AlmacenSesiones sesiones,
+            AuthenticationStateProvider estadoAutenticacion)
         {
             _httpClientFactory = httpClientFactory;
+            this.sesiones = sesiones;
+            this.estadoAutenticacion = estadoAutenticacion;
         }
 
         // ==========================================
         // INICIAR SESIÓN
         // ==========================================
 
-        public async Task<bool> LoginAsync(
+        public async Task<string?> AutenticarAsync(
             UsuarioLoginDTO usuario)
         {
             var client = _httpClientFactory
@@ -35,7 +42,7 @@ namespace ControlVehicular.Services
                 if (response.StatusCode == HttpStatusCode.Unauthorized ||
                     response.StatusCode == HttpStatusCode.BadRequest)
                 {
-                    return false;
+                    return null;
                 }
 
                 if (!response.IsSuccessStatusCode)
@@ -55,9 +62,7 @@ namespace ControlVehicular.Services
                     );
                 }
 
-                _token = resultado.Token;
-
-                return true;
+                return resultado.Token;
             }
             catch (HttpRequestException)
             {
@@ -77,27 +82,21 @@ namespace ControlVehicular.Services
         // OBTENER TOKEN
         // ==========================================
 
-        public string? GetToken()
+        public async Task<string?> ObtenerTokenAsync()
         {
-            return _token;
+            var estado = await estadoAutenticacion.GetAuthenticationStateAsync();
+            return sesiones.Obtener(estado.User)?.TokenJava;
         }
 
-        // ==========================================
-        // VERIFICAR SESIÓN LOCAL
-        // ==========================================
-
-        public bool IsAuthenticated()
+        public async Task<bool> EstaAutenticadoAsync()
         {
-            return !string.IsNullOrWhiteSpace(_token);
+            return await ObtenerTokenAsync() != null;
         }
 
-        // ==========================================
-        // CERRAR SESIÓN
-        // ==========================================
-
-        public void Logout()
+        public async Task InvalidarSesionAsync()
         {
-            _token = null;
+            var estado = await estadoAutenticacion.GetAuthenticationStateAsync();
+            sesiones.Invalidar(estado.User);
         }
     }
 }

@@ -1,23 +1,88 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@implements IDisposable
 
-<div class="page">
-    <div class="sidebar">
+@using ControlVehicular.Services
+@using Microsoft.AspNetCore.Components.Routing
+
+@inject NavigationManager Navigation
+
+<div class="portal">
+    <aside class="portal-sidebar" aria-label="Menú del portal">
         <NavMenu />
-    </div>
+    </aside>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <div class="portal-workspace">
+        <header class="portal-header">
+            <div class="section-heading">
+                <span class="portal-label">PORTAL ADMINISTRATIVO</span>
+                <p class="section-title">@tituloSeccion</p>
+            </div>
 
-        <article class="content px-4">
+            <div class="header-actions">
+                <span class="portal-identity">Control Vehicular</span>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <form method="post" action="sesion/logout" data-enhance="false">
+                            <AntiforgeryToken />
+                            <button type="submit" class="session-action">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a class="session-action" href="login" data-enhance-nav="false">
+                            Iniciar sesión
+                        </a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </header>
+
+        <main id="contenido-principal" class="portal-content">
             @Body
-        </article>
-    </main>
+        </main>
+    </div>
 </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+<div id="blazor-error-ui" role="alert">
+    Se produjo un error inesperado.
+    <a href="" class="reload">Recargar</a>
+    <a class="dismiss" role="button" tabindex="0" aria-label="Cerrar aviso">×</a>
 </div>
+
+@code {
+    private string tituloSeccion = "Inicio";
+
+    protected override void OnInitialized()
+    {
+        ActualizarTitulo();
+        Navigation.LocationChanged += AlCambiarUbicacion;
+    }
+
+    private void ActualizarTitulo()
+    {
+        var ruta = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var rutaSinParametros = ruta.Split('?', '#')[0].Trim('/');
+
+        tituloSeccion = rutaSinParametros.Equals(
+            "vehiculos",
+            StringComparison.OrdinalIgnoreCase)
+                ? "Gestión de Vehículos"
+                : "Inicio";
+    }
+
+    private void AlCambiarUbicacion(object? remitente, LocationChangedEventArgs argumentos)
+    {
+        _ = InvokeAsync(() =>
+        {
+            ActualizarTitulo();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= AlCambiarUbicacion;
+    }
+}

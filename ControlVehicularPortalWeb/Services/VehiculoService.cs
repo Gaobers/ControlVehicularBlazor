@@ -28,7 +28,7 @@ namespace ControlVehicular.Services
             string endpoint,
             object? datos = null)
         {
-            var token = _authService.GetToken();
+            var token = await _authService.ObtenerTokenAsync();
 
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -61,6 +61,7 @@ namespace ControlVehicular.Services
 
                 if (estado == HttpStatusCode.Unauthorized)
                 {
+                    await _authService.InvalidarSesionAsync();
                     throw new UnauthorizedAccessException(
                         "Tu sesión no es válida o ha expirado.");
                 }

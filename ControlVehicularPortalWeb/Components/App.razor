@@ -26,15 +26,25 @@
           type="image/png"
           href="favicon.png" />
 
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="ModoRenderizado" />
 </head>
 
 <body>
 
-    <Routes @rendermode="InteractiveServer" />
+    <Routes @rendermode="ModoRenderizado" />
 
     <script src="_framework/blazor.web.js"></script>
 
 </body>
 
 </html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext ContextoHttp { get; set; } = default!;
+
+    private Microsoft.AspNetCore.Components.IComponentRenderMode? ModoRenderizado =>
+        ContextoHttp.Request.Path.StartsWithSegments("/login")
+            ? null
+            : InteractiveServer;
+}

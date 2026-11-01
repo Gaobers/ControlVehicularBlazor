@@ -1,30 +1,66 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">ControlVehicularPortalWeb</a>
+<div class="navigation-shell">
+    <div class="brand-row">
+        <a class="portal-brand" href="">
+            <span class="brand-mark" aria-hidden="true">CV</span>
+            <span class="brand-name">
+                <strong>Control Vehicular</strong>
+                <span>Portal Web</span>
+            </span>
+        </a>
+
+        <button type="button"
+                class="menu-toggle"
+                aria-label="Mostrar u ocultar navegación"
+                aria-controls="navegacion-principal"
+                aria-expanded="@(menuAbierto ? "true" : "false")"
+                @onclick="AlternarMenu">
+            <span aria-hidden="true">☰</span>
+            Menú
+        </button>
+    </div>
+
+    <div id="navegacion-principal"
+         class="navigation-content @(menuAbierto ? "is-open" : "")">
+        <span class="navigation-label">NAVEGACIÓN PRINCIPAL</span>
+
+        <nav aria-label="Navegación principal">
+            <div class="navigation-item">
+                <NavLink class="navigation-link"
+                         href=""
+                         Match="NavLinkMatch.All"
+                         @onclick="CerrarMenu">
+                    <span class="navigation-symbol" aria-hidden="true">⌂</span>
+                    Inicio
+                </NavLink>
+            </div>
+
+            <div class="navigation-item">
+                <NavLink class="navigation-link"
+                         href="vehiculos"
+                         @onclick="CerrarMenu">
+                    <span class="navigation-symbol" aria-hidden="true">▤</span>
+                    Gestión de Vehículos
+                </NavLink>
+            </div>
+        </nav>
+
+        <div class="navigation-footer">
+            <span class="footer-mark" aria-hidden="true"></span>
+            Portal de Control Vehicular
+        </div>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@code {
+    private bool menuAbierto;
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    private void AlternarMenu()
+    {
+        menuAbierto = !menuAbierto;
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+    private void CerrarMenu()
+    {
+        menuAbierto = false;
+    }
+}

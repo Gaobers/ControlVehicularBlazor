@@ -83,7 +83,7 @@ public partial class Vehiculos
 
     protected override async Task OnInitializedAsync()
     {
-        autenticado = AuthService.IsAuthenticated();
+        autenticado = await AuthService.EstaAutenticadoAsync();
 
         if (!autenticado)
         {
@@ -361,7 +361,7 @@ public partial class Vehiculos
 
     private void IrALogin()
     {
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo("/login", forceLoad: true);
     }
 
 }

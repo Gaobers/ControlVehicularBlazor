@@ -1,4 +1,4 @@
-﻿
+
 @page "/login"
 @layout ControlVehicularPortalWeb.Components.Layout.LoginLayout
 
@@ -7,6 +7,10 @@
 
 @inject AuthService AuthService
 @inject NavigationManager Navigation
+@inject AlmacenSesiones Sesiones
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
 
 <PageTitle>Iniciar sesión | Control Vehicular</PageTitle>
 
@@ -96,21 +100,16 @@
                             se realizó correctamente.
                         </div>
 
-                        <button type="button"
-                        class="login-button"
-                        @onclick="IrAVehiculos">
+                        <a class="login-button" href="vehiculos" data-enhance-nav="false">
+                            Ir a Gestión de Vehículos →
+                        </a>
 
-                        Ir a Gestión de Vehículos →
-
-                        </button>
-
-                        <button type="button"
-                                class="logout-button"
-                                @onclick="CerrarSesion">
-
-                            Cerrar sesión
-
-                        </button>
+                        <form method="post" action="sesion/logout" data-enhance="false">
+                            <AntiforgeryToken />
+                            <button type="submit" class="logout-button">
+                                Cerrar sesión
+                            </button>
+                        </form>
 
                     </div>
                 }
@@ -132,7 +131,9 @@
                     </div>
 
                     <EditForm Model="@usuario"
+                              method="post"
                               OnValidSubmit="IniciarSesionAsync"
+                              OnInvalidSubmit="LimpiarClave"
                               FormName="loginPortal">
 
                         <DataAnnotationsValidator />
@@ -223,7 +224,11 @@
 
 @code {
 
-    private UsuarioLoginDTO usuario = new();
+    [SupplyParameterFromForm]
+    private UsuarioLoginDTO usuario { get; set; } = new();
+
+    [CascadingParameter]
+    private HttpContext ContextoHttp { get; set; } = default!;
 
     private string? errorMensaje;
 
@@ -238,7 +243,8 @@
 
     protected override void OnInitialized()
     {
-        autenticado = AuthService.IsAuthenticated();
+        usuario ??= new UsuarioLoginDTO();
+        autenticado = Sesiones.Obtener(ContextoHttp.User) != null;
     }
 
 
@@ -246,10 +252,17 @@
     // INICIAR SESIÓN
     // ==========================================
 
+    private void LimpiarClave()
+    {
+        usuario.Clave = string.Empty;
+    }
+
     private async Task IniciarSesionAsync()
     {
         if (cargando)
+        {
             return;
+        }
 
         cargando = true;
 
@@ -257,17 +270,42 @@
 
         try
         {
-            var resultado = await AuthService.LoginAsync(usuario);
+            var token = await AuthService.AutenticarAsync(usuario);
 
-            if (!resultado)
+            if (token == null)
             {
                 errorMensaje = "Correo o contraseña incorrectos.";
                 return;
             }
 
-            autenticado = true;
+            var sesion = Sesiones.Crear(token);
+            var identidad = new ClaimsIdentity(
+                new[] { new Claim(AlmacenSesiones.ClaimSesion, sesion.Identificador) },
+                CookieAuthenticationDefaults.AuthenticationScheme);
 
-            usuario.Clave = string.Empty;
+            try
+            {
+                await ContextoHttp.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identidad),
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = false,
+                        AllowRefresh = false,
+                        ExpiresUtc = sesion.Expiracion
+                    });
+            }
+            catch
+            {
+                Sesiones.Invalidar(new ClaimsPrincipal(identidad));
+                throw;
+            }
+
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Microsoft.AspNetCore.Components.NavigationException)
+        {
+            throw;
         }
         catch (InvalidOperationException ex)
         {
@@ -280,29 +318,10 @@
         }
         finally
         {
+            usuario.Clave = string.Empty;
             cargando = false;
         }
     }
 
-
-    // ==========================================
-    // CERRAR SESIÓN
-    // ==========================================
-
-    private void CerrarSesion()
-    {
-        AuthService.Logout();
-
-        autenticado = false;
-
-        errorMensaje = null;
-
-        usuario = new UsuarioLoginDTO();
-    }
-
-    private void IrAVehiculos()
-    {
-        Navigation.NavigateTo("/vehiculos");
-    }
 
 }

@@ -61,20 +61,20 @@ public sealed class CV70RegistroInvalidoTests : VehicleE2ETestBase
             Assert.That(await VehicleRow(vehicle.Plate).CountAsync(), Is.Zero,
                 "La placa única no debe aparecer en la lista después del rechazo de validación UI.");
 
-            await form.GetByRole(AriaRole.Button, new() { Name = "Cancelar" }).ClickAsync();
-            await Page.Locator(".page-header").GetByRole(
-                AriaRole.Button,
-                new() { Name = "Registrar vehículo" }).ClickAsync();
-            await FillVehicleFieldAsync("Propietario ID *", config.OwnerId.ToString());
-            await FillVehicleFieldAsync("Marca *", vehicle.Brand);
-            await FillVehicleFieldAsync("Modelo *", vehicle.Model);
-            await FillVehicleFieldAsync("Año *", vehicle.Year.ToString());
-            await FillVehicleFieldAsync("Placa *", vehicle.Plate);
-            await FillVehicleFieldAsync("Color", vehicle.Color);
-            await FillVehicleFieldAsync("Kilometraje actual *", vehicle.Mileage.ToString());
+            // InputNumber binds through onchange. Tab commits the edit by leaving
+            // the field, just as a user would, without replacing the EditContext.
+            await yearField.FillAsync(vehicle.Year.ToString());
+            await yearField.PressAsync("Tab");
+            await Microsoft.Playwright.Assertions.Expect(yearField).ToHaveClassAsync(
+                new System.Text.RegularExpressions.Regex(@"\bvalid\b"),
+                new() { Timeout = E2EConfiguration.TimeoutMilliseconds });
+            await yearField.Locator("xpath=..").Locator(".validation-message")
+                .WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+            Assert.That(await yearField.EvaluateAsync<bool>("element => element.validity.valid"),
+                Is.True, "El año corregido debe cumplir también la validación HTML.");
+            await CaptureStageAsync("anio-corregido-mismo-formulario", "CV-70 registro");
 
-            var correctedForm = Page.Locator(".vehicle-form-card");
-            await correctedForm.GetByRole(AriaRole.Button, new() { Name = "Registrar vehículo" }).ClickAsync();
+            await form.GetByRole(AriaRole.Button, new() { Name = "Registrar vehículo" }).ClickAsync();
             await Page.GetByText("Vehículo registrado correctamente.", new() { Exact = true })
                 .WaitForAsync(new() { State = WaitForSelectorState.Visible });
 

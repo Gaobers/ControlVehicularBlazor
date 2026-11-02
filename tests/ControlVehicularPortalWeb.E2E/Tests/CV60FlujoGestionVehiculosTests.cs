@@ -238,25 +238,17 @@ public sealed class CV60FlujoGestionVehiculosTests : VehicleE2ETestBase
 
     private async Task VerifyArchivedVehicleAsync(string plate)
     {
+        // The current list contract retains logically archived vehicles.
+        // Absence from ACTIVO alone does not prove a successful archive.
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Actualizar" }).ClickAsync();
         var row = VehicleRow(plate);
-        if (await row.CountAsync() > 0)
-        {
-            Assert.That(
-                await row.Locator(".status").InnerTextAsync(),
-                Is.EqualTo("Archivado"),
-                "El registro debe permanecer visible con el estado lógico ARCHIVADO.");
-        }
-        else
-        {
-            var statusFilter = Page.Locator(".filter-select");
-            await statusFilter.SelectOptionAsync("ACTIVO");
-            await Page.GetByRole(AriaRole.Button, new() { Name = "Actualizar" }).ClickAsync();
-
-            Assert.That(
-                await VehicleRow(plate).CountAsync(),
-                Is.Zero,
-                "El registro archivado no debe aparecer en el filtro de vehículos activos.");
-        }
+        await Microsoft.Playwright.Assertions.Expect(row.Locator(".status"))
+            .ToHaveTextAsync("Archivado", new() { Timeout = E2EConfiguration.TimeoutMilliseconds });
+        await OpenVehicleDetailsAsync(plate);
+        await Microsoft.Playwright.Assertions.Expect(Page.Locator(".details-grid div")
+                .Filter(new() { Has = Page.Locator("label").GetByText("Estado", new() { Exact = true }) })
+                .Locator("strong"))
+            .ToHaveTextAsync("ARCHIVADO", new() { Timeout = E2EConfiguration.TimeoutMilliseconds });
 
         await CaptureStageAsync("verificacion-archivado");
     }

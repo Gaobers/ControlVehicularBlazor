@@ -133,11 +133,10 @@ public abstract class VehicleE2ETestBase : E2ETestBase
         var form = Page.Locator(".vehicle-form-card");
         await form.WaitForAsync(new() { State = WaitForSelectorState.Visible });
 
-        var labelElement = form.Locator("label")
-            .Filter(new()
-            {
-                HasTextString = label.Replace("*", string.Empty, StringComparison.Ordinal).Trim()
-            });
+        // Labels have no for/id association in the existing component.
+        // Match the complete label inside the form, then its containing field group.
+        var labelElement = form.Locator(".field-group > label")
+            .GetByText(label, new() { Exact = true });
         await labelElement.WaitForAsync(new() { State = WaitForSelectorState.Visible });
         var field = labelElement
             .Locator("xpath=..")
@@ -251,7 +250,8 @@ public abstract class VehicleE2ETestBase : E2ETestBase
 
         var archivedRow = VehicleRow(plate);
         await archivedRow.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        Assert.That(await archivedRow.Locator(".status").InnerTextAsync(), Is.EqualTo("Archivado"));
+        await Microsoft.Playwright.Assertions.Expect(archivedRow.Locator(".status"))
+            .ToHaveTextAsync("Archivado", new() { Timeout = E2EConfiguration.TimeoutMilliseconds });
         await CaptureStageAsync("vehiculo-archivado", caseId);
     }
 

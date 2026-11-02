@@ -164,7 +164,7 @@ public abstract class E2ETestBase
         });
 
         AllureApi.AddAttachment($"{caseId} - {stageName}", "image/png", screenshot);
-        TestContext.Progress.WriteLine($"CV-60 evidence ({stageName}): {path}");
+        TestContext.Progress.WriteLine($"{caseId} evidence ({stageName}): {path}");
     }
 
     private static async Task CreateRedactedTraceAsync(string sourcePath, string destinationPath)

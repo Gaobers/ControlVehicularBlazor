@@ -1,0 +1,10 @@
+{
+  "allure": {
+    "directory": "../../../allure-results",
+    "environmentInfo": {
+      "framework": ".NET 8",
+      "browser": "Chromium headless",
+      "application": "ControlVehicularPortalWeb"
+    }
+  }
+}

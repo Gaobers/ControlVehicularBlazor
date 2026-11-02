@@ -1,0 +1,11 @@
+{
+  "allure": {
+    "directory": "../../../allure-results-fase7-consolidado",
+    "environmentInfo": {
+      "framework": ".NET 8",
+      "browser": "Chromium headless",
+      "application": "ControlVehicularPortalWeb",
+      "execution": "Fase 7 - six Jira/Zephyr cases"
+    }
+  }
+}

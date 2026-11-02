@@ -1,6 +1,7 @@
 using System.Text;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
+using Allure.Net.Commons;
 using Microsoft.Playwright;
 using NUnit.Framework;
 
@@ -38,8 +39,17 @@ public sealed class CV69JwtInvalidoApiTests : VehicleE2ETestBase
                 }
             });
 
+            // Record the observed status before asserting, including on HTTP 500.
+            // Do not attach response bodies or headers that could expose vehicle data.
+            var evidence = $"GET {E2EConfiguration.ApiBaseUrl}api/vehiculos/lista\n" +
+                $"JWT: firma deliberadamente inválida\nHTTP observado: {response.Status}\n" +
+                "HTTP esperado: 401 o 403";
+            TestContext.Out.WriteLine(evidence);
+            AllureApi.AddAttachment("CV-69 JWT inválido - resultado HTTP", "text/plain",
+                Encoding.UTF8.GetBytes(evidence));
+
             Assert.That(response.Status, Is.AnyOf(401, 403),
-                "La ruta GET protegida debe rechazar el bearer token inválido con Unauthorized o Forbidden.");
+                 $"La ruta GET protegida debe devolver 401/403; devolvió {response.Status}. HTTP 500 indica un posible defecto de autenticación de la API.");
             Assert.That(response.Status, Is.Not.EqualTo(200),
                 "Una consulta sin credenciales válidas nunca debe devolver datos de vehículos.");
             TestContext.Progress.WriteLine($"CV-69 invalid JWT: GET /api/vehiculos/lista returned HTTP {response.Status}.");

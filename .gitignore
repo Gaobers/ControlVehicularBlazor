@@ -55,6 +55,21 @@ nunit-*.xml
 [Rr]eleasePS/
 dlldata.c
 
+# E2E test artifacts and generated reports
+/TestResults/
+/allure-results/
+/allure-report/
+/tests/ControlVehicularPortalWeb.E2E/artifacts/
+/tests/ControlVehicularPortalWeb.E2E/allure-results/
+/tests/ControlVehicularPortalWeb.E2E/allure-report/
+/tests/ControlVehicularPortalWeb.E2E/allure-results-fase7-*/
+/tests/ControlVehicularPortalWeb.E2E/allure-report-fase7-*/
+
+# Local test credentials and environment overrides
+.env
+.env.*
+!.env.example
+
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
 

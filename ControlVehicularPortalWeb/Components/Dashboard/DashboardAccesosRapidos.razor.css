@@ -1,0 +1,46 @@
+.accesos {
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: white;
+}
+
+.accesos h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.accesos ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(185px, 100%), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.accesos a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    height: 100%;
+    padding: 10px 13px;
+    border: 1px solid #dbeafe;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #075985;
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.accesos a:hover {
+    background: #eff6ff;
+    text-decoration: underline;
+}
+
+.accesos a:focus-visible {
+    outline: 3px solid #0284c7;
+    outline-offset: 2px;
+}

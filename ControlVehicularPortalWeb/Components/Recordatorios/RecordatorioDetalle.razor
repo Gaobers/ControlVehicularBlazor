@@ -1,0 +1,38 @@
+@using ControlVehicular.DTO.Recordatorios
+
+<section class="details-card" aria-labelledby="titulo-detalle">
+    <div class="details-header">
+        <h2 id="titulo-detalle">Detalle del recordatorio #@Recordatorio.Id</h2>
+        <button type="button" class="btn-close-custom" @onclick="Cerrar">Cerrar</button>
+    </div>
+
+    <dl class="details-grid">
+        <div>
+            <dt>Mantenimiento</dt>
+            <dd>@Mantenimiento</dd>
+        </div>
+        <div>
+            <dt>Días de anticipación</dt>
+            <dd>@(Recordatorio.DiasAnticipacion?.ToString() ?? "Sin valor")</dd>
+        </div>
+        <div>
+            <dt>Kilómetros de anticipación</dt>
+            <dd>@(Recordatorio.KilometrosAnticipacion?.ToString("G29") ?? "Sin valor")</dd>
+        </div>
+        <div>
+            <dt>Vigencia</dt>
+            <dd>@(Recordatorio.Activo ? "Activo" : "Inactivo")</dd>
+        </div>
+    </dl>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public RecordatorioSalidaDTO Recordatorio { get; set; } = default!;
+
+    [Parameter]
+    public string Mantenimiento { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback Cerrar { get; set; }
+}

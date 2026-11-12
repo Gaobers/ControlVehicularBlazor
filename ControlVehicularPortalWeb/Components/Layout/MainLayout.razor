@@ -65,11 +65,17 @@
         var ruta = Navigation.ToBaseRelativePath(Navigation.Uri);
         var rutaSinParametros = ruta.Split('?', '#')[0].Trim('/');
 
-        tituloSeccion = rutaSinParametros.Equals(
-            "vehiculos",
-            StringComparison.OrdinalIgnoreCase)
-                ? "Gestión de Vehículos"
-                : "Inicio";
+        tituloSeccion = rutaSinParametros.ToLowerInvariant() switch
+        {
+            "vehiculos" => "Gestión de Vehículos",
+            "kilometrajes" => "Kilometrajes",
+            "mantenimientos" => "Mantenimientos",
+            "recordatorios" => "Recordatorios",
+            "gastos" => "Gastos",
+            "documentos-vehiculos" => "Documentos Vehiculares",
+            "estadisticas-gastos" => "Estadísticas de Gastos",
+            _ => "Inicio"
+        };
     }
 
     private void AlCambiarUbicacion(object? remitente, LocationChangedEventArgs argumentos)

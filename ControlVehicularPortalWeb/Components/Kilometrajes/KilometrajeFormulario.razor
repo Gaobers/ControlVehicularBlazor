@@ -1,0 +1,103 @@
+@using ControlVehicular.DTO.Kilometrajes
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="reading-form-card" aria-labelledby="titulo-formulario">
+    @if (Alta is not null)
+    {
+        <header class="form-card-header">
+            <h2 id="titulo-formulario">Registrar lectura</h2>
+        </header>
+
+        <EditForm Model="Alta" OnValidSubmit="Guardar" @key="Alta">
+            <DataAnnotationsValidator />
+            <fieldset disabled="@Ocupado" class="reading-form-grid">
+                <div class="field-group">
+                    <label for="alta-vehiculo">Vehículo</label>
+                    <InputSelect id="alta-vehiculo" class="reading-input" @bind-Value="Alta.VehiculoId">
+                        <option value="">Selecciona un vehículo</option>
+                        @foreach (var vehiculo in Vehiculos)
+                        {
+                            <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Alta.VehiculoId" />
+                </div>
+                <div class="field-group">
+                    <label for="alta-kilometraje">Kilometraje (km)</label>
+                    <InputNumber id="alta-kilometraje" class="reading-input" min="0" step="any"
+                                 @bind-Value="Alta.Kilometraje" />
+                    <ValidationMessage For="() => Alta.Kilometraje" />
+                </div>
+                <div class="field-group field-wide">
+                    <label for="alta-observacion">Observación (opcional)</label>
+                    <InputTextArea id="alta-observacion" class="reading-input" maxlength="255"
+                                   @bind-Value="Alta.Observacion" />
+                    <ValidationMessage For="() => Alta.Observacion" />
+                </div>
+                @Acciones
+            </fieldset>
+        </EditForm>
+    }
+    else if (Edicion is not null)
+    {
+        <header class="form-card-header">
+            <h2 id="titulo-formulario">Editar lectura #@Edicion.Id</h2>
+            <p>@VehiculoEdicion</p>
+        </header>
+
+        <EditForm Model="Edicion" OnValidSubmit="Guardar" @key="Edicion">
+            <DataAnnotationsValidator />
+            <fieldset disabled="@Ocupado" class="reading-form-grid">
+                <div class="field-group">
+                    <label for="edicion-kilometraje">Kilometraje (km)</label>
+                    <InputNumber id="edicion-kilometraje" class="reading-input" min="0" step="any"
+                                 @bind-Value="Edicion.Kilometraje" />
+                    <ValidationMessage For="() => Edicion.Kilometraje" />
+                </div>
+                <div class="field-group">
+                    <label for="edicion-estado">Estado</label>
+                    <InputSelect id="edicion-estado" class="reading-input" @bind-Value="Edicion.Activo">
+                        <option value="true">Activa</option>
+                        <option value="false">Inactiva</option>
+                    </InputSelect>
+                    <ValidationMessage For="() => Edicion.Activo" />
+                </div>
+                <div class="field-group field-wide">
+                    <label for="edicion-observacion">Observación (opcional)</label>
+                    <InputTextArea id="edicion-observacion" class="reading-input" maxlength="255"
+                                   @bind-Value="Edicion.Observacion" />
+                    <ValidationMessage For="() => Edicion.Observacion" />
+                </div>
+                @Acciones
+            </fieldset>
+        </EditForm>
+    }
+</section>
+
+@code {
+    [Parameter]
+    public KilometrajeGuardarDTO? Alta { get; set; }
+
+    [Parameter]
+    public KilometrajeModificarDTO? Edicion { get; set; }
+
+    [Parameter]
+    public string VehiculoEdicion { get; set; } = string.Empty;
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Guardar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+
+    private RenderFragment Acciones => @<div class="form-actions">
+        <button type="submit" class="btn-primary-custom">Guardar lectura</button>
+        <button type="button" class="btn-cancel" @onclick="Cancelar">Cancelar</button>
+    </div>;
+}

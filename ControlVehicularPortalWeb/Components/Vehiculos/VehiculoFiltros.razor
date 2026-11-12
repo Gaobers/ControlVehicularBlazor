@@ -3,13 +3,13 @@
 <div class="filters-container">
 
     <input type="text"
-           class="search-input"
+           class="search-input" disabled="@Ocupado"
            placeholder="Buscar marca, modelo o placa..."
            @bind:get="Busqueda"
            @bind:set="BusquedaChanged.InvokeAsync"
            @bind:event="oninput" />
 
-    <select class="filter-select"
+    <select class="filter-select" disabled="@Ocupado"
             @bind:get="FiltroEstado"
             @bind:set="FiltroEstadoChanged.InvokeAsync">
 
@@ -22,6 +22,9 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public bool Ocupado { get; set; }
 
     [Parameter]
     public string Busqueda { get; set; } = string.Empty;

@@ -1,0 +1,70 @@
+@using ControlVehicular.DTO.Mantenimientos
+@using ControlVehicular.DTO.Vehiculos
+
+<div class="filtros">
+    <div>
+        <label for="mantenimiento-filtro-vehiculo">Vehículo</label>
+        <select id="mantenimiento-filtro-vehiculo" class="filter-select" disabled="@Ocupado"
+                @bind:get="VehiculoId" @bind:set="VehiculoIdChanged.InvokeAsync">
+            <option value="">Todos los vehículos</option>
+            @foreach (var vehiculo in Vehiculos)
+            {
+                <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label for="mantenimiento-filtro-estado">Estado</label>
+        <select id="mantenimiento-filtro-estado" class="filter-select" disabled="@Ocupado"
+                @bind:get="Estado" @bind:set="EstadoChanged.InvokeAsync">
+            <option value="">Todos los estados</option>
+            @foreach (var estado in Enum.GetValues<EstadoMantenimiento>())
+            {
+                <option value="@estado">@estado</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label for="mantenimiento-filtro-activo">Vigencia</label>
+        <select id="mantenimiento-filtro-activo" class="filter-select" disabled="@Ocupado"
+                @bind:get="Vigencia" @bind:set="CambiarVigenciaAsync">
+            <option value="">Todos</option>
+            <option value="true">Activos</option>
+            <option value="false">Inactivos</option>
+        </select>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public long? VehiculoId { get; set; }
+
+    [Parameter]
+    public EstadoMantenimiento? Estado { get; set; }
+
+    [Parameter]
+    public bool? Activo { get; set; }
+
+    [Parameter]
+    public EventCallback<long?> VehiculoIdChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<EstadoMantenimiento?> EstadoChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool?> ActivoChanged { get; set; }
+
+    private string Vigencia => Activo?.ToString().ToLowerInvariant() ?? string.Empty;
+
+    private Task CambiarVigenciaAsync(string valor)
+    {
+        bool? activo = bool.TryParse(valor, out var resultado) ? resultado : null;
+        return ActivoChanged.InvokeAsync(activo);
+    }
+}

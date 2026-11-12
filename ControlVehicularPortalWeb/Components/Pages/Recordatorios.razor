@@ -1,0 +1,87 @@
+@page "/recordatorios"
+@attribute [Authorize]
+@using ControlVehicularPortalWeb.Components.Recordatorios
+
+<PageTitle>Recordatorios | Control Vehicular</PageTitle>
+
+<div class="recordatorios-page">
+    <header class="page-header">
+        <div>
+            <span class="page-label">CONTROL VEHICULAR</span>
+            <h1>Gestión de Recordatorios</h1>
+            <p>Administra los días y kilómetros de anticipación de cada mantenimiento.</p>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn-refresh"
+                    disabled="@Ocupado" @onclick="ActualizarAsync">
+                Actualizar
+            </button>
+            <button type="button" class="btn-primary-custom"
+                    disabled="@(Ocupado || mantenimientos.Count == 0)" @onclick="AbrirRegistro">
+                + Registrar recordatorio
+            </button>
+        </div>
+    </header>
+
+    @if (mensajeError is not null)
+    {
+        <div class="error-message" role="alert">@mensajeError</div>
+    }
+
+    @if (mensajeExito is not null)
+    {
+        <div class="success-alert" role="status">@mensajeExito</div>
+    }
+
+    @if (formulario is not null)
+    {
+        <RecordatorioFormulario Modelo="formulario"
+                                Mantenimientos="mantenimientos"
+                                NombreMantenimiento="NombreMantenimiento"
+                                Ocupado="Ocupado"
+                                Guardar="GuardarAsync"
+                                Cancelar="CerrarPaneles" />
+    }
+
+    @if (pendienteDesactivar is not null)
+    {
+        <RecordatorioConfirmacion RecordatorioId="pendienteDesactivar.Id"
+                                  Mantenimiento="@NombreMantenimiento(pendienteDesactivar.MantenimientoId)"
+                                  Ocupado="Ocupado"
+                                  Confirmar="DesactivarAsync"
+                                  Cancelar="CerrarPaneles" />
+    }
+
+    @if (detalle is not null)
+    {
+        <RecordatorioDetalle Recordatorio="detalle"
+                             Mantenimiento="@NombreMantenimiento(detalle.MantenimientoId)"
+                             Cerrar="CerrarPaneles" />
+    }
+
+    <section class="filter-card" aria-labelledby="titulo-filtros">
+        <h2 id="titulo-filtros">Filtrar recordatorios</h2>
+        <RecordatorioFiltros Activo="activo"
+                             ActivoChanged="CambiarVigencia"
+                             Ocupado="Ocupado" />
+        @if (!cargando && mantenimientos.Count == 0)
+        {
+            <p class="filter-message">No hay mantenimientos disponibles para asociar recordatorios.</p>
+        }
+    </section>
+
+    <section class="table-card" aria-labelledby="titulo-historial">
+        <div class="table-header">
+            <h2 id="titulo-historial">Recordatorios registrados</h2>
+            <p>Consulta los recordatorios que coinciden con los filtros.</p>
+        </div>
+        <RecordatorioTabla Recordatorios="RecordatoriosFiltrados"
+                           NombreMantenimiento="NombreMantenimiento"
+                           MensajeVacio="@MensajeListado"
+                           Cargando="cargando"
+                           Ocupado="Ocupado"
+                           VerDetalle="VerDetalleAsync"
+                           Editar="AbrirEdicionAsync"
+                           Desactivar="SolicitarDesactivacion" />
+    </section>
+</div>

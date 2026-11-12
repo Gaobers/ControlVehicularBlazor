@@ -1,0 +1,56 @@
+@page "/estadisticas-gastos"
+@attribute [Authorize]
+@using ControlVehicularPortalWeb.Components.EstadisticasGastos
+
+<PageTitle>Estadísticas de Gastos | Control Vehicular</PageTitle>
+
+<div class="estadisticas-page">
+    <header class="page-header">
+        <span class="page-label">CONTROL VEHICULAR</span>
+        <h1>Estadísticas de Gastos</h1>
+        <p>Consulta los gastos activos agrupados por moneda, vehículo, categoría y mes.</p>
+    </header>
+
+    @if (mensajeError is not null)
+    {
+        <div class="error-message" role="alert">@mensajeError</div>
+    }
+
+    @if (mensajeVehiculos is not null)
+    {
+        <p class="status-message" role="status">@mensajeVehiculos</p>
+    }
+
+    <EstadisticasGastosFiltros Filtros="filtros"
+                              Vehiculos="vehiculos"
+                              Cargando="cargando"
+                              Consultar="ConsultarAsync"
+                              Limpiar="LimpiarAsync" />
+
+    @if (cargando)
+    {
+        <p class="status-message" role="status">Consultando estadísticas…</p>
+    }
+    else if (resultado is not null)
+    {
+        <EstadisticasGastosResumen Resultado="resultado"
+                                    VehiculoAplicado="@NombreVehiculo(resultado.VehiculoId)" />
+
+        @if (resultado.CantidadGastos == 0)
+        {
+            <p class="status-message" role="status">No hay gastos activos para los filtros aplicados.</p>
+        }
+        else
+        {
+            <div class="resultados">
+                <EstadisticasGastosTabla Titulo="Totales por moneda" Filas="FilasMoneda" />
+                <EstadisticasGastosTabla Titulo="Totales por vehículo" EncabezadoGrupo="Vehículo"
+                                         Filas="FilasVehiculo" />
+                <EstadisticasGastosTabla Titulo="Totales por categoría" EncabezadoGrupo="ID de categoría"
+                                         Filas="FilasCategoria" />
+                <EstadisticasGastosTabla Titulo="Totales por mes" EncabezadoGrupo="Mes"
+                                         Filas="FilasMes" />
+            </div>
+        }
+    }
+</div>

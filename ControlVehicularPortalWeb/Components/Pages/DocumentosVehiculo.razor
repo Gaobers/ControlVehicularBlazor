@@ -1,0 +1,92 @@
+@page "/documentos-vehiculos"
+@attribute [Authorize]
+@using ControlVehicularPortalWeb.Components.DocumentosVehiculo
+
+<PageTitle>Documentos Vehiculares | Control Vehicular</PageTitle>
+
+<div class="documentos-vehiculo-page">
+    <header class="page-header">
+        <div>
+            <span class="page-label">CONTROL VEHICULAR</span>
+            <h1>Gestión de Documentos Vehiculares</h1>
+            <p>Consulta y administra los documentos asociados a los vehículos.</p>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn-refresh"
+                    disabled="@Ocupado" @onclick="ActualizarAsync">
+                Actualizar
+            </button>
+            <button type="button" class="btn-primary-custom"
+                    disabled="@(Ocupado || !listadoDisponible || vehiculos.Count == 0)" @onclick="AbrirRegistro">
+                + Registrar documento
+            </button>
+        </div>
+    </header>
+
+    @if (mensajeError is not null)
+    {
+        <div class="error-message" role="alert">@mensajeError</div>
+    }
+
+    @if (mensajeExito is not null)
+    {
+        <div class="success-alert" role="status">@mensajeExito</div>
+    }
+
+    @if (formulario is not null)
+    {
+        <DocumentoVehiculoFormulario Modelo="formulario"
+                                     Titulo="@TituloFormulario"
+                                     Vehiculos="vehiculos"
+                                     Ocupado="Ocupado"
+                                     Guardar="GuardarAsync"
+                                     Cancelar="CerrarPaneles" />
+    }
+
+    @if (pendienteVigencia is not null)
+    {
+        <DocumentoVehiculoConfirmacion Documento="pendienteVigencia"
+                                       Vehiculo="@NombreVehiculo(pendienteVigencia.VehiculoId)"
+                                       Ocupado="Ocupado"
+                                       Confirmar="ConfirmarVigenciaAsync"
+                                       Cancelar="CerrarPaneles" />
+    }
+
+    @if (detalle is not null)
+    {
+        <DocumentoVehiculoDetalle Documento="detalle"
+                                  Tipo="@NombreTipo(detalle.Tipo)"
+                                  Vehiculo="@NombreVehiculo(detalle.VehiculoId)"
+                                  Cerrar="CerrarPaneles" />
+    }
+
+    <section class="filter-card" aria-labelledby="titulo-filtros">
+        <h2 id="titulo-filtros">Filtrar documentos</h2>
+        <DocumentoVehiculoFiltros Vehiculos="vehiculos"
+                                  VehiculoId="vehiculoId"
+                                  VehiculoIdChanged="CambiarVehiculoAsync"
+                                  IncluirInactivos="incluirInactivos"
+                                  IncluirInactivosChanged="CambiarInactivosAsync"
+                                  Ocupado="Ocupado" />
+        @if (!Ocupado && listadoDisponible && vehiculos.Count == 0)
+        {
+            <p class="filter-message">No hay vehículos disponibles para registrar documentos.</p>
+        }
+    </section>
+
+    <section class="table-card" aria-labelledby="titulo-historial">
+        <div class="table-header">
+            <h2 id="titulo-historial">Documentos registrados</h2>
+            <p>Consulta los documentos que coinciden con los filtros.</p>
+        </div>
+        <DocumentoVehiculoTabla Documentos="documentos"
+                                NombreVehiculo="NombreVehiculo"
+                                NombreTipo="NombreTipo"
+                                MensajeVacio="@MensajeListado"
+                                Cargando="cargando"
+                                Ocupado="Ocupado"
+                                VerDetalle="VerDetalleAsync"
+                                Editar="AbrirEdicionAsync"
+                                CambiarVigencia="SolicitarCambioVigencia" />
+    </section>
+</div>

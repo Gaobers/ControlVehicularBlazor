@@ -1,0 +1,46 @@
+@using ControlVehicular.DTO.Kilometrajes
+
+<section class="details-card" aria-labelledby="titulo-detalle">
+    <div class="details-header">
+        <h2 id="titulo-detalle">Detalle de lectura #@Lectura.Id</h2>
+        <button type="button" class="btn-close-custom" @onclick="Cerrar">Cerrar</button>
+    </div>
+
+    <dl class="details-grid">
+        <div>
+            <dt>Vehículo</dt>
+            <dd>@Vehiculo</dd>
+        </div>
+        <div>
+            <dt>Kilometraje</dt>
+            <dd>@Lectura.Kilometraje.ToString("N1") km</dd>
+        </div>
+        <div>
+            <dt>Fecha y hora</dt>
+            <dd>@(Lectura.FechaHora?.ToString("dd/MM/yyyy HH:mm") ?? "Sin fecha")</dd>
+        </div>
+        <div>
+            <dt>Registrado por</dt>
+            <dd>@(Lectura.RegistradoPor?.ToString() ?? "Sin registro de usuario")</dd>
+        </div>
+        <div>
+            <dt>Estado</dt>
+            <dd>@(Lectura.Activo ? "Activa" : "Inactiva")</dd>
+        </div>
+        <div>
+            <dt>Observación</dt>
+            <dd>@(Lectura.Observacion ?? "Sin observación")</dd>
+        </div>
+    </dl>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public KilometrajeSalidaDTO Lectura { get; set; } = default!;
+
+    [Parameter]
+    public string Vehiculo { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback Cerrar { get; set; }
+}

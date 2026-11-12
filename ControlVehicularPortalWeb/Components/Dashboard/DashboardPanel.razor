@@ -1,0 +1,30 @@
+<section class="panel" aria-label="@Titulo" aria-busy="@Cargando.ToString().ToLowerInvariant()">
+    <h2>@Titulo</h2>
+
+    @if (Cargando)
+    {
+        <p class="panel-estado" role="status">Cargando información…</p>
+    }
+    else if (Error is not null)
+    {
+        <p class="panel-estado panel-error" role="status">@Error</p>
+    }
+    else
+    {
+        @ChildContent
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Cargando { get; set; }
+
+    [Parameter]
+    public string? Error { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

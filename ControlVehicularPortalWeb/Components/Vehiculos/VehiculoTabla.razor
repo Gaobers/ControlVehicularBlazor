@@ -93,13 +93,14 @@ else
 
                                 <button type="button"
                                         class="btn-details"
+                                        disabled="@Ocupado"
                                         @onclick="() => VerDetalle.InvokeAsync(vehiculo.Id)">
                                     Ver
                                 </button>
 
                                 <button type="button"
                                         class="btn-edit"
-                                        disabled="@Guardando"
+                                        disabled="@Ocupado"
                                         @onclick="() => Editar.InvokeAsync(vehiculo)">
                                     Editar
                                 </button>
@@ -108,7 +109,7 @@ else
                                 {
                                     <button type="button"
                                             class="btn-archive"
-                                            disabled="@Guardando"
+                                            disabled="@Ocupado"
                                             @onclick="() => Archivar.InvokeAsync(vehiculo.Id)">
                                         Archivar
                                     </button>
@@ -129,6 +130,9 @@ else
 }
 
 @code {
+
+    [Parameter]
+    public bool Ocupado { get; set; }
 
     [Parameter]
     public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = Array.Empty<VehiculoSalidaDTO>();

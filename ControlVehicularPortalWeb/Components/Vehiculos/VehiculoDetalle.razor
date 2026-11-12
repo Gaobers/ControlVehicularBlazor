@@ -1,11 +1,14 @@
 @using ControlVehicular.DTO.Vehiculos
 
-<section class="details-card">
+<section class="details-card"
+         tabindex="-1"
+         aria-labelledby="titulo-detalle-vehiculo"
+         @ref="panelDetalle">
 
     <div class="details-header">
 
         <div>
-            <h2>Detalle del vehículo</h2>
+            <h2 id="titulo-detalle-vehiculo">Detalle del vehículo</h2>
             <p>Registro #@Vehiculo.Id</p>
         </div>
 
@@ -102,6 +105,8 @@
 
 @code {
 
+    private ElementReference panelDetalle;
+
     [Parameter]
     public bool Ocupado { get; set; }
 
@@ -110,4 +115,12 @@
 
     [Parameter]
     public EventCallback Cerrar { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await panelDetalle.FocusAsync();
+        }
+    }
 }

@@ -5,7 +5,10 @@
 
 .readings-table {
     width: 100%;
-    min-width: 980px;
+    min-width: 1180px;
+    table-layout: fixed;
+    overflow-wrap: normal;
+    word-break: normal;
     border-collapse: collapse;
 }
 
@@ -139,4 +142,54 @@
 
 .btn-activate:hover {
     background: #bbf7d0;
+}
+
+/* Distribución de columnas y contenido legible */
+.readings-table tbody th,
+.readings-table td {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.cell-text {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.row-actions button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.table-responsive:focus-visible {
+    outline: 2px solid #0284c7;
+    outline-offset: -2px;
+}
+
+.column-id {
+    width: 125px;
+}
+
+.column-type {
+    width: 170px;
+}
+
+.column-date {
+    width: 135px;
+}
+
+.column-expiry {
+    width: 145px;
+}
+
+.column-validity {
+    width: 110px;
+}
+
+.column-actions {
+    width: 250px;
 }

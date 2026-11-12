@@ -28,7 +28,9 @@
                         <tr>
                             @if (EncabezadoGrupo is not null)
                             {
-                                <th scope="row">@fila.Grupo</th>
+                                <th scope="row">
+                                    <span class="group-text" tabindex="0" title="@fila.Grupo">@fila.Grupo</span>
+                                </th>
                             }
                             <td><span class="currency">@fila.Moneda</span></td>
                             <td class="numeric">@fila.Cantidad.ToString("N0")</td>

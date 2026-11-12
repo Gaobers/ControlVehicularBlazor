@@ -96,6 +96,14 @@
                                 Cancelar="CancelarFormulario" />
         }
 
+        @if (vehiculoSeleccionado != null)
+        {
+            <VehiculoDetalle @key="vehiculoSeleccionado"
+                             Vehiculo="vehiculoSeleccionado"
+                             Ocupado="Ocupado"
+                             Cerrar="CerrarDetalle" />
+        }
+
         <section class="table-card">
             <div class="table-header">
                 <div>
@@ -129,10 +137,5 @@
                                    Cancelar="CancelarArchivado" />
         }
 
-        @if (vehiculoSeleccionado != null)
-        {
-            <VehiculoDetalle Vehiculo="vehiculoSeleccionado" Ocupado="Ocupado"
-                             Cerrar="CerrarDetalle" />
-        }
     }
 </div>

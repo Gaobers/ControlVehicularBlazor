@@ -21,9 +21,18 @@ else if (!Vehiculos.Any())
 }
 else
 {
-    <div class="table-responsive">
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Vehículos con desplazamiento horizontal">
 
         <table class="vehicles-table">
+            <colgroup>
+                <col class="column-id" />
+                <col class="column-vehicle" />
+                <col class="column-year" />
+                <col class="column-plate" />
+                <col class="column-mileage" />
+                <col class="column-status" />
+                <col class="column-actions" />
+            </colgroup>
 
             <thead>
                 <tr>
@@ -47,12 +56,12 @@ else
 
                         <td>
                             <div class="vehicle-name">
-                                <strong>
+                                <strong class="cell-text" title="@($"{vehiculo.Marca} {vehiculo.Modelo}")">
                                     @vehiculo.Marca
                                     @vehiculo.Modelo
                                 </strong>
 
-                                <span>
+                                <span class="cell-text" title="@(vehiculo.Color ?? "Sin color")">
                                     @(vehiculo.Color ?? "Sin color")
                                 </span>
                             </div>
@@ -61,7 +70,7 @@ else
                         <td>@vehiculo.Anio</td>
 
                         <td>
-                            <span class="plate">
+                            <span class="plate cell-text" title="@vehiculo.Placa">
                                 @vehiculo.Placa
                             </span>
                         </td>

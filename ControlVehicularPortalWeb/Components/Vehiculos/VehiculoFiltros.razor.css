@@ -37,6 +37,10 @@
         flex-direction: column;
     }
 
+    .search-input {
+        flex: 0 0 auto;
+    }
+
     .filter-select {
         width: 100%;
     }

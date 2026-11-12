@@ -25,7 +25,9 @@
 
 .results-table {
     width: 100%;
-    min-width: 320px;
+    min-width: 480px;
+    overflow-wrap: normal;
+    word-break: normal;
     border-collapse: collapse;
 }
 
@@ -53,7 +55,9 @@
 }
 
 .currency {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
     padding: 4px 9px;
     border-radius: 20px;
     background: #eff6ff;
@@ -75,4 +79,29 @@
     .results-table td {
         padding: 12px;
     }
+}
+
+/* El grupo completo se revela con teclado, ratón o al enfocar con toque. */
+.group-text {
+    display: block;
+    max-width: 24ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.group-text:hover,
+.group-text:focus {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.group-text:focus-visible,
+.table-scroll:focus-visible {
+    outline: 2px solid #0284c7;
+    outline-offset: -2px;
+}
+
+.results-table thead th {
+    white-space: nowrap;
 }

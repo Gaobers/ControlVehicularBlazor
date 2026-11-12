@@ -12,6 +12,14 @@ else
 {
     <div class="table-responsive" tabindex="0" role="region" aria-label="Recordatorios con desplazamiento horizontal">
         <table class="readings-table">
+            <colgroup>
+                <col class="column-id" />
+                <col class="column-maintenance" />
+                <col class="column-days" />
+                <col class="column-mileage" />
+                <col class="column-validity" />
+                <col class="column-actions" />
+            </colgroup>
             <thead>
                 <tr>
                     <th scope="col">Recordatorio</th>
@@ -27,7 +35,9 @@ else
                 {
                     <tr @key="recordatorio.Id">
                         <th scope="row">#@recordatorio.Id</th>
-                        <td>@NombreMantenimiento(recordatorio.MantenimientoId)</td>
+                        <td>
+                            <span class="cell-text" title="@NombreMantenimiento(recordatorio.MantenimientoId)">@NombreMantenimiento(recordatorio.MantenimientoId)</span>
+                        </td>
                         <td>@(recordatorio.DiasAnticipacion?.ToString() ?? "—")</td>
                         <td>@(recordatorio.KilometrosAnticipacion?.ToString("G29") ?? "—")</td>
                         <td>

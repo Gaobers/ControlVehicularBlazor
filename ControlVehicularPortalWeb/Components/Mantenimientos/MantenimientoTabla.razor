@@ -12,6 +12,15 @@ else
 {
     <div class="table-responsive" tabindex="0" role="region" aria-label="Mantenimientos con desplazamiento horizontal">
         <table class="readings-table">
+            <colgroup>
+                <col class="column-service" />
+                <col class="column-vehicle" />
+                <col class="column-date" />
+                <col class="column-mileage" />
+                <col class="column-status" />
+                <col class="column-validity" />
+                <col class="column-actions" />
+            </colgroup>
             <thead>
                 <tr>
                     <th scope="col">Servicio</th>
@@ -27,12 +36,17 @@ else
                 @foreach (var mantenimiento in Mantenimientos)
                 {
                     <tr @key="mantenimiento.Id">
-                        <th scope="row">@mantenimiento.Servicio</th>
-                        <td>@NombreVehiculo(mantenimiento.VehiculoId)</td>
+                        <th scope="row">
+                            <span class="cell-text" title="@mantenimiento.Servicio">@mantenimiento.Servicio</span>
+                        </th>
+                        <td>
+                            <span class="cell-text" title="@NombreVehiculo(mantenimiento.VehiculoId)">@NombreVehiculo(mantenimiento.VehiculoId)</span>
+                        </td>
                         <td class="text-nowrap">@(mantenimiento.FechaObjetivo?.ToString("dd/MM/yyyy") ?? "—")</td>
                         <td>@(mantenimiento.KilometrajeObjetivo?.ToString("N1") ?? "—")</td>
                         <td>
-                            <span class="status status-estado @mantenimiento.Estado">@mantenimiento.Estado</span></td>
+                            <span class="status status-estado @mantenimiento.Estado">@mantenimiento.Estado</span>
+                        </td>
                         <td>
                             <span class="status @(mantenimiento.Activo ? "status-active" : "status-inactive")">
                                 @(mantenimiento.Activo ? "Activo" : "Inactivo")

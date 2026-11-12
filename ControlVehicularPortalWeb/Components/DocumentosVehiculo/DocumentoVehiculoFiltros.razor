@@ -1,0 +1,53 @@
+@using ControlVehicular.DTO.Vehiculos
+
+<div class="filtros">
+    <div>
+        <label for="documento-filtro-vehiculo">Vehículo</label>
+        <select id="documento-filtro-vehiculo" class="filter-select" disabled="@Ocupado"
+                @bind:get="VehiculoId" @bind:set="CambiarVehiculoAsync">
+            <option value="">Todos los vehículos</option>
+            @foreach (var vehiculo in Vehiculos)
+            {
+                <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+            }
+        </select>
+    </div>
+    <div class="filtro-vigencia">
+        <label for="documento-filtro-inactivos">Vigencia</label>
+        <label class="opcion-inactivos">
+            <input id="documento-filtro-inactivos" type="checkbox" disabled="@Ocupado"
+                   @bind:get="IncluirInactivos" @bind:set="CambiarInactivosAsync" />
+            Incluir documentos inactivos
+        </label>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public long? VehiculoId { get; set; }
+
+    [Parameter]
+    public bool IncluirInactivos { get; set; }
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback<long?> VehiculoIdChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IncluirInactivosChanged { get; set; }
+
+    private Task CambiarVehiculoAsync(long? id)
+    {
+        return VehiculoIdChanged.InvokeAsync(id);
+    }
+
+    private Task CambiarInactivosAsync(bool incluir)
+    {
+        return IncluirInactivosChanged.InvokeAsync(incluir);
+    }
+}

@@ -22,14 +22,14 @@
 
         <button type="button"
                 class="btn-cancel"
-                disabled="@Archivando"
+                disabled="@Ocupado"
                 @onclick="Cancelar">
             Cancelar
         </button>
 
         <button type="button"
                 class="btn-confirm-archive"
-                disabled="@Archivando"
+                disabled="@Ocupado"
                 @onclick="Confirmar">
 
             @(Archivando
@@ -43,6 +43,9 @@
 </section>
 
 @code {
+
+    [Parameter]
+    public bool Ocupado { get; set; }
 
     [Parameter]
     public VehiculoSalidaDTO? Vehiculo { get; set; }

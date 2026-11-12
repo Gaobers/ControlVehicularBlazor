@@ -29,14 +29,14 @@
 
                 <button type="button"
                         class="btn-refresh"
-                        disabled="@cargando"
-                        @onclick="CargarVehiculosAsync">
+                        disabled="@Ocupado"
+                        @onclick="ActualizarVehiculosAsync">
                     Actualizar
                 </button>
 
                 <button type="button"
                         class="btn-primary-custom"
-                        disabled="@guardando"
+                        disabled="@Ocupado"
                         @onclick="AbrirRegistro">
                     + Registrar vehículo
                 </button>
@@ -90,6 +90,7 @@
             <VehiculoFormulario Formulario="formulario"
                                 IdEdicion="idEdicion"
                                 Guardando="guardando"
+                                Ocupado="Ocupado"
                                 @bind-EstadoEdicion="estadoEdicion"
                                 Guardar="GuardarVehiculoAsync"
                                 Cancelar="CancelarFormulario" />
@@ -103,12 +104,13 @@
                 </div>
             </div>
 
-            <VehiculoFiltros @bind-Busqueda="busqueda"
+            <VehiculoFiltros Ocupado="Ocupado" @bind-Busqueda="busqueda"
                              @bind-FiltroEstado="filtroEstado" />
 
             <VehiculoTabla Vehiculos="vehiculosFiltrados"
                             Cargando="cargando"
                             Guardando="guardando"
+                                Ocupado="Ocupado"
                             VerDetalle="VerDetalleAsync"
                             Editar="AbrirEdicion"
                             Archivar="SolicitarArchivado" />
@@ -122,13 +124,14 @@
         {
             <VehiculoConfirmacion Vehiculo="VehiculoPorArchivar"
                                    Archivando="archivando"
+                                   Ocupado="Ocupado"
                                    Confirmar="ConfirmarArchivadoAsync"
                                    Cancelar="CancelarArchivado" />
         }
 
         @if (vehiculoSeleccionado != null)
         {
-            <VehiculoDetalle Vehiculo="vehiculoSeleccionado"
+            <VehiculoDetalle Vehiculo="vehiculoSeleccionado" Ocupado="Ocupado"
                              Cerrar="CerrarDetalle" />
         }
     }

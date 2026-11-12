@@ -1,0 +1,30 @@
+@using ControlVehicular.DTO.Kilometrajes
+
+<section class="stat-card" aria-labelledby="titulo-lectura-actual">
+    <h2 id="titulo-lectura-actual">Kilometraje actual</h2>
+
+    @if (Cargando)
+    {
+        <p role="status">Consultando lecturas…</p>
+    }
+    else if (Actual is not null)
+    {
+        <strong>@Actual.Kilometraje.ToString("N1") km</strong>
+        <p>Mayor lectura activa del vehículo seleccionado.</p>
+    }
+    else
+    {
+        <p>@Mensaje</p>
+    }
+</section>
+
+@code {
+    [Parameter]
+    public KilometrajeSalidaDTO? Actual { get; set; }
+
+    [Parameter]
+    public bool Cargando { get; set; }
+
+    [Parameter]
+    public string Mensaje { get; set; } = string.Empty;
+}

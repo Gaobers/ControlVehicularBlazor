@@ -1,0 +1,110 @@
+@page "/mantenimientos"
+@attribute [Authorize]
+@using ControlVehicularPortalWeb.Components.Mantenimientos
+
+<PageTitle>Mantenimientos | Control Vehicular</PageTitle>
+
+<div class="mantenimientos-page">
+    <header class="page-header">
+        <div>
+            <span class="page-label">CONTROL VEHICULAR</span>
+            <h1>Gestión de Mantenimientos</h1>
+            <p>Consulta los servicios, sus metas y el estado de mantenimiento de tus vehículos.</p>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn-refresh"
+                    disabled="@Ocupado" @onclick="ActualizarAsync">
+                Actualizar
+            </button>
+            <button type="button" class="btn-primary-custom"
+                    disabled="@(Ocupado || vehiculos.Count == 0)" @onclick="AbrirRegistro">
+                + Registrar mantenimiento
+            </button>
+        </div>
+    </header>
+
+    @if (mensajeError is not null)
+    {
+        <div class="error-message" role="alert">@mensajeError</div>
+    }
+
+    @if (mensajeExito is not null)
+    {
+        <div class="success-alert" role="status">@mensajeExito</div>
+    }
+
+    @if (formulario is not null)
+    {
+        <MantenimientoFormulario Modelo="formulario"
+                                 Vehiculos="vehiculos"
+                                 Origenes="origenes"
+                                 NombreVehiculo="NombreVehiculo"
+                                 Ocupado="Ocupado"
+                                 Guardar="GuardarAsync"
+                                 Cancelar="CerrarPaneles" />
+    }
+
+    @if (pendienteDesactivar is not null)
+    {
+        <MantenimientoConfirmacion MantenimientoId="pendienteDesactivar.Id"
+                                   Vehiculo="@NombreVehiculo(pendienteDesactivar.VehiculoId)"
+                                   Ocupado="Ocupado"
+                                   Confirmar="DesactivarAsync"
+                                   Cancelar="CerrarPaneles" />
+    }
+
+    @if (detalle is not null)
+    {
+        <MantenimientoDetalle Mantenimiento="detalle"
+                              Vehiculo="@NombreVehiculo(detalle.VehiculoId)"
+                              Cerrar="CerrarPaneles" />
+    }
+
+    <section class="filter-card" aria-labelledby="titulo-filtros">
+        <h2 id="titulo-filtros">Filtrar mantenimientos</h2>
+        <MantenimientoFiltros Vehiculos="vehiculos"
+                              VehiculoId="vehiculoId"
+                              VehiculoIdChanged="CambiarVehiculoAsync"
+                              Estado="estado"
+                              EstadoChanged="CambiarEstadoAsync"
+                              Activo="activo"
+                              ActivoChanged="CambiarVigenciaAsync"
+                              Ocupado="Ocupado" />
+        @if (!cargando && vehiculos.Count == 0)
+        {
+            <p class="filter-message">No hay vehículos disponibles en el selector.</p>
+        }
+    </section>
+
+    <section class="table-card" aria-labelledby="titulo-historial">
+        <div class="table-header">
+            <h2 id="titulo-historial">Mantenimientos registrados</h2>
+            <p>Consulta los mantenimientos que coinciden con los filtros.</p>
+        </div>
+        <MantenimientoTabla Mantenimientos="mantenimientos"
+                            NombreVehiculo="NombreVehiculo"
+                            MensajeVacio="@mensajeListado"
+                            Cargando="cargando"
+                            Ocupado="Ocupado"
+                            VerDetalle="VerDetalleAsync"
+                            Editar="AbrirEdicionAsync"
+                            Desactivar="SolicitarDesactivacion" />
+
+        @if (pagina > 0 || totalPaginas > 1)
+        {
+            <div class="table-footer">
+                <button type="button" class="btn-refresh pagination-button"
+                        disabled="@(Ocupado || pagina == 0)"
+                        @onclick="() => CambiarPaginaAsync(pagina - 1)">
+                    Anterior
+                </button>
+                <span>Página @(pagina + 1)</span>
+                <button type="button" class="btn-refresh pagination-button"
+                        disabled="@(Ocupado || pagina + 1 >= totalPaginas)"
+                        @onclick="() => CambiarPaginaAsync(pagina + 1)">
+                    Siguiente
+                </button>
+            </div>
+        }
+    </section>
+</div>

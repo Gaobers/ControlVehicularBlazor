@@ -1,0 +1,99 @@
+@using ControlVehicular.DTO.DocumentosVehiculo
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="document-form-form-card" aria-labelledby="titulo-documento-formulario">
+    <header class="form-card-header">
+        <h2 id="titulo-documento-formulario">@Titulo</h2>
+        <p>Completa los datos del documento asociado al vehículo.</p>
+    </header>
+
+    @if (Vehiculos.Count == 0)
+    {
+        <p role="status">No hay vehículos disponibles para guardar este documento.</p>
+    }
+
+    <EditForm Model="Modelo" OnValidSubmit="Guardar" @key="Modelo">
+        <DataAnnotationsValidator />
+        <fieldset disabled="@(Ocupado || Vehiculos.Count == 0)" class="document-form-form-grid">
+            <div class="field-group">
+                <label for="documento-vehiculo">Vehículo</label>
+                <InputSelect id="documento-vehiculo" class="document-form-input" @bind-Value="Modelo.VehiculoId">
+                    <option value="">Selecciona un vehículo</option>
+                    @foreach (var vehiculo in Vehiculos)
+                    {
+                        <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Modelo.VehiculoId" />
+            </div>
+            <div class="field-group">
+                <label for="documento-tipo">Tipo de documento</label>
+                <InputSelect id="documento-tipo" class="document-form-input" @bind-Value="Modelo.Tipo">
+                    <option value="">Selecciona un tipo</option>
+                    <option value="SEGURO">Seguro</option>
+                    <option value="REVISION_TECNICA">Revisión técnica</option>
+                    <option value="OTRO">Otro</option>
+                </InputSelect>
+                <ValidationMessage For="() => Modelo.Tipo" />
+            </div>
+            <div class="field-group">
+                <label for="documento-numero">Número de documento (opcional)</label>
+                <InputText id="documento-numero" class="document-form-input" maxlength="100"
+                           @bind-Value="Modelo.NumeroDocumento" />
+                <ValidationMessage For="() => Modelo.NumeroDocumento" />
+            </div>
+            <div class="field-group">
+                <label for="documento-emisora">Entidad emisora (opcional)</label>
+                <InputText id="documento-emisora" class="document-form-input" maxlength="150"
+                           @bind-Value="Modelo.EntidadEmisora" />
+                <ValidationMessage For="() => Modelo.EntidadEmisora" />
+            </div>
+            <div class="field-group">
+                <label for="documento-emision">Fecha de emisión (opcional)</label>
+                <InputDate id="documento-emision" class="document-form-input" @bind-Value="Modelo.FechaEmision" />
+                <ValidationMessage For="() => Modelo.FechaEmision" />
+            </div>
+            <div class="field-group">
+                <label for="documento-vencimiento">Fecha de vencimiento (opcional)</label>
+                <InputDate id="documento-vencimiento" class="document-form-input" @bind-Value="Modelo.FechaVencimiento" />
+                <ValidationMessage For="() => Modelo.FechaVencimiento" />
+            </div>
+            <div class="field-group field-wide">
+                <label for="documento-descripcion">Descripción (opcional)</label>
+                <InputTextArea id="documento-descripcion" class="document-form-input" maxlength="150"
+                               @bind-Value="Modelo.Descripcion" />
+                <ValidationMessage For="() => Modelo.Descripcion" />
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary-custom"
+                    disabled="@(Ocupado || Vehiculos.Count == 0)">
+                Guardar documento
+            </button>
+            <button type="button" class="btn-cancel" disabled="@Ocupado" @onclick="Cancelar">
+                Cancelar
+            </button>
+        </div>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public DocumentoVehiculoRequest Modelo { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Guardar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+
+    [Parameter]
+    public string Titulo { get; set; } = string.Empty;
+}

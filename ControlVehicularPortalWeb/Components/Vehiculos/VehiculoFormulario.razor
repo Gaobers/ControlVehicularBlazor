@@ -20,7 +20,7 @@
 
         <button type="button"
                 class="btn-close-custom"
-                disabled="@Guardando"
+                disabled="@Ocupado"
                 @onclick="Cancelar">
             Cerrar
         </button>
@@ -219,14 +219,14 @@
 
             <button type="button"
                     class="btn-cancel"
-                    disabled="@Guardando"
+                    disabled="@Ocupado"
                     @onclick="Cancelar">
                 Cancelar
             </button>
 
             <button type="submit"
                     class="btn-primary-custom"
-                    disabled="@Guardando">
+                    disabled="@Ocupado">
 
                 @if (Guardando)
                 {
@@ -250,6 +250,9 @@
 </section>
 
 @code {
+
+    [Parameter]
+    public bool Ocupado { get; set; }
 
     [Parameter]
     public VehiculoGuardarDTO Formulario { get; set; } = new();

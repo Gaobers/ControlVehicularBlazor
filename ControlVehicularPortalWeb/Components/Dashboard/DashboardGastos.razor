@@ -1,0 +1,27 @@
+@using ControlVehicular.DTO.EstadisticasGastos
+
+<p class="gastos-cantidad">
+    <strong>@Resultado.CantidadGastos.ToString("N0")</strong> gastos activos reportados
+</p>
+
+@if (Resultado.TotalesPorMoneda.Count == 0)
+{
+    <p class="gastos-vacio">No hay importes por moneda para mostrar.</p>
+}
+else
+{
+    <dl class="gastos-monedas" aria-label="Importes por moneda">
+        @foreach (var moneda in Resultado.TotalesPorMoneda)
+        {
+            <div>
+                <dt>@moneda.Moneda</dt>
+                <dd>@moneda.Total.ToString("N2")</dd>
+            </div>
+        }
+    </dl>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public EstadisticasGastosResponse Resultado { get; set; } = default!;
+}

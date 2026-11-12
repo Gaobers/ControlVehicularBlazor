@@ -1,0 +1,23 @@
+.summary-card {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 25px;
+    padding: 24px 25px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+}
+
+.summary-card h2,
+.summary-card p {
+    margin: 0;
+    color: #475569;
+    font-size: 13px;
+}
+
+.summary-card strong {
+    color: #0f172a;
+    font-size: 32px;
+    font-weight: 750;
+}

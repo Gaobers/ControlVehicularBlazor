@@ -1,0 +1,57 @@
+@using ControlVehicular.DTO.EstadisticasGastos
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="filter-card" aria-labelledby="titulo-filtros-estadisticas">
+    <h2 id="titulo-filtros-estadisticas">Filtrar estadísticas</h2>
+
+    <EditForm Model="Filtros" OnValidSubmit="Consultar" @key="Filtros">
+        <DataAnnotationsValidator />
+        <fieldset class="filtros" disabled="@Cargando">
+            <div>
+                <label for="estadisticas-inicio">Fecha inicial</label>
+                <InputDate id="estadisticas-inicio" class="filter-select" @bind-Value="Filtros.FechaInicio" />
+                <ValidationMessage For="() => Filtros.FechaInicio" />
+            </div>
+            <div>
+                <label for="estadisticas-fin">Fecha final</label>
+                <InputDate id="estadisticas-fin" class="filter-select" @bind-Value="Filtros.FechaFin" />
+                <ValidationMessage For="() => Filtros.FechaFin" />
+            </div>
+            <div>
+                <label for="estadisticas-vehiculo">Vehículo</label>
+                <InputSelect id="estadisticas-vehiculo" class="filter-select" @bind-Value="Filtros.VehiculoId">
+                    <option value="">Todos los vehículos</option>
+                    @foreach (var vehiculo in Vehiculos)
+                    {
+                        <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Filtros.VehiculoId" />
+            </div>
+        </fieldset>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn-primary-custom" disabled="@Cargando">Consultar</button>
+            <button type="button" class="btn-refresh" disabled="@Cargando" @onclick="Limpiar">
+                Limpiar filtros
+            </button>
+        </div>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public EstadisticasGastosRequest Filtros { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public bool Cargando { get; set; }
+
+    [Parameter]
+    public EventCallback Consultar { get; set; }
+
+    [Parameter]
+    public EventCallback Limpiar { get; set; }
+}

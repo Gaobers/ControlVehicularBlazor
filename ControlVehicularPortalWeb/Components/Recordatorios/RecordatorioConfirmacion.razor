@@ -1,0 +1,30 @@
+<section class="deactivation-card" aria-labelledby="titulo-confirmacion">
+    <h2 id="titulo-confirmacion">Desactivar recordatorio #@RecordatorioId</h2>
+    <p>El recordatorio de @Mantenimiento quedará inactivo y seguirá disponible al filtrar por inactivos.</p>
+
+    <div class="confirmation-actions">
+        <button type="button" class="btn-confirm-deactivate" disabled="@Ocupado" @onclick="Confirmar">
+            Confirmar desactivación
+        </button>
+        <button type="button" class="btn-cancel" disabled="@Ocupado" @onclick="Cancelar">
+            Cancelar
+        </button>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public long RecordatorioId { get; set; }
+
+    [Parameter]
+    public string Mantenimiento { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Confirmar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+}

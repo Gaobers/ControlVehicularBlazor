@@ -34,10 +34,13 @@ public partial class Vehiculos
         EstadoVehiculo.ACTIVO;
 
     private bool autenticado;
-    private bool cargando = true;
+    private bool cargando;
     private bool guardando;
     private bool archivando;
     private bool mostrarFormulario;
+    private bool consultandoDetalle;
+
+    private bool Ocupado => cargando || guardando || archivando || consultandoDetalle;
 
     private string busqueda = "";
     private string filtroEstado = "TODOS";
@@ -99,9 +102,19 @@ public partial class Vehiculos
     // CARGAR VEHÍCULOS
     // ==========================================
 
+    private async Task ActualizarVehiculosAsync()
+    {
+        if (Ocupado)
+        {
+            return;
+        }
+
+        await CargarVehiculosAsync();
+    }
+
     private async Task CargarVehiculosAsync()
     {
-        if (cargando && vehiculos.Count > 0)
+        if (cargando)
         {
             return;
         }
@@ -134,6 +147,11 @@ public partial class Vehiculos
 
     private void AbrirRegistro()
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
         formulario = new VehiculoGuardarDTO();
 
         idEdicion = null;
@@ -154,6 +172,11 @@ public partial class Vehiculos
 
     private void AbrirEdicion(VehiculoSalidaDTO vehiculo)
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
         formulario = new VehiculoGuardarDTO
         {
             PropietarioId = vehiculo.PropietarioId,
@@ -185,7 +208,7 @@ public partial class Vehiculos
 
     private async Task GuardarVehiculoAsync()
     {
-        if (guardando)
+        if (Ocupado)
         {
             return;
         }
@@ -229,7 +252,7 @@ public partial class Vehiculos
                 mensaje = "Vehículo registrado correctamente.";
             }
 
-            CancelarFormulario();
+            RestablecerFormulario();
 
             await CargarVehiculosAsync();
 
@@ -252,6 +275,16 @@ public partial class Vehiculos
 
     private void CancelarFormulario()
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
+        RestablecerFormulario();
+    }
+
+    private void RestablecerFormulario()
+    {
         mostrarFormulario = false;
 
         idEdicion = null;
@@ -268,9 +301,14 @@ public partial class Vehiculos
 
     private void SolicitarArchivado(long id)
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
         idPendienteArchivar = id;
 
-        CancelarFormulario();
+        RestablecerFormulario();
 
         errorMensaje = null;
         exitoMensaje = null;
@@ -283,7 +321,7 @@ public partial class Vehiculos
 
     private async Task ConfirmarArchivadoAsync()
     {
-        if (!idPendienteArchivar.HasValue || archivando)
+        if (!idPendienteArchivar.HasValue || Ocupado)
         {
             return;
         }
@@ -321,6 +359,11 @@ public partial class Vehiculos
 
     private void CancelarArchivado()
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
         idPendienteArchivar = null;
     }
 
@@ -331,6 +374,12 @@ public partial class Vehiculos
 
     private async Task VerDetalleAsync(long id)
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
+        consultandoDetalle = true;
         errorMensaje = null;
 
         try
@@ -342,6 +391,10 @@ public partial class Vehiculos
         {
             errorMensaje = ex.Message;
         }
+        finally
+        {
+            consultandoDetalle = false;
+        }
     }
 
 
@@ -351,6 +404,11 @@ public partial class Vehiculos
 
     private void CerrarDetalle()
     {
+        if (Ocupado)
+        {
+            return;
+        }
+
         vehiculoSeleccionado = null;
     }
 

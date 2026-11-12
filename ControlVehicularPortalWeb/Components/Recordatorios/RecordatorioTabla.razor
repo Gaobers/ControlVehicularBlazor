@@ -1,0 +1,88 @@
+@using ControlVehicular.DTO.Recordatorios
+
+@if (Cargando)
+{
+    <p class="table-message" role="status">Cargando recordatorios…</p>
+}
+else if (Recordatorios.Count == 0)
+{
+    <p class="table-message">@MensajeVacio</p>
+}
+else
+{
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Recordatorios con desplazamiento horizontal">
+        <table class="readings-table">
+            <thead>
+                <tr>
+                    <th scope="col">Recordatorio</th>
+                    <th scope="col">Mantenimiento</th>
+                    <th scope="col">Días de anticipación</th>
+                    <th scope="col">Kilómetros de anticipación</th>
+                    <th scope="col">Vigencia</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var recordatorio in Recordatorios)
+                {
+                    <tr @key="recordatorio.Id">
+                        <th scope="row">#@recordatorio.Id</th>
+                        <td>@NombreMantenimiento(recordatorio.MantenimientoId)</td>
+                        <td>@(recordatorio.DiasAnticipacion?.ToString() ?? "—")</td>
+                        <td>@(recordatorio.KilometrosAnticipacion?.ToString("G29") ?? "—")</td>
+                        <td>
+                            <span class="status @(recordatorio.Activo ? "status-active" : "status-inactive")">
+                                @(recordatorio.Activo ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <button type="button" class="btn-details"
+                                        disabled="@Ocupado" @onclick="() => VerDetalle.InvokeAsync(recordatorio.Id)">
+                                    Ver
+                                </button>
+                                <button type="button" class="btn-edit"
+                                        disabled="@Ocupado" @onclick="() => Editar.InvokeAsync(recordatorio.Id)">
+                                    Editar
+                                </button>
+                                @if (recordatorio.Activo)
+                                {
+                                    <button type="button" class="btn-deactivate"
+                                            disabled="@Ocupado" @onclick="() => Desactivar.InvokeAsync(recordatorio)">
+                                        Desactivar
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public IReadOnlyList<RecordatorioSalidaDTO> Recordatorios { get; set; } = [];
+
+    [Parameter]
+    public Func<long, string> NombreMantenimiento { get; set; } = id => $"Mantenimiento #{id}";
+
+    [Parameter]
+    public string MensajeVacio { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Cargando { get; set; }
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback<long> VerDetalle { get; set; }
+
+    [Parameter]
+    public EventCallback<long> Editar { get; set; }
+
+    [Parameter]
+    public EventCallback<RecordatorioSalidaDTO> Desactivar { get; set; }
+}

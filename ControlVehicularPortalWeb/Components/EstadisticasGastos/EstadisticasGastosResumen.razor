@@ -1,0 +1,18 @@
+@using ControlVehicular.DTO.EstadisticasGastos
+
+<section class="summary-card" aria-labelledby="titulo-resumen-estadisticas">
+    <h2 id="titulo-resumen-estadisticas">Cantidad de gastos</h2>
+    <strong>@Resultado.CantidadGastos.ToString("N0")</strong>
+    <p>
+        @VehiculoAplicado · Desde @(Resultado.FechaInicio?.ToString("dd/MM/yyyy") ?? "cualquier fecha")
+        · Hasta @(Resultado.FechaFin?.ToString("dd/MM/yyyy") ?? "cualquier fecha")
+    </p>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public EstadisticasGastosResponse Resultado { get; set; } = default!;
+
+    [Parameter]
+    public string VehiculoAplicado { get; set; } = string.Empty;
+}

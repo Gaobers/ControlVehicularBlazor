@@ -1,0 +1,55 @@
+<section class="table-card" aria-label="@Titulo">
+    <header class="table-header">
+        <h2>@Titulo</h2>
+    </header>
+
+    @if (Filas.Count == 0)
+    {
+        <p class="table-message">No hay gastos para esta agrupación.</p>
+    }
+    else
+    {
+        <div class="table-scroll" tabindex="0" role="region" aria-label="@Titulo">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        @if (EncabezadoGrupo is not null)
+                        {
+                            <th scope="col">@EncabezadoGrupo</th>
+                        }
+                        <th scope="col">Moneda</th>
+                        <th scope="col" class="numeric">Cantidad</th>
+                        <th scope="col" class="numeric">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var fila in Filas)
+                    {
+                        <tr>
+                            @if (EncabezadoGrupo is not null)
+                            {
+                                <th scope="row">@fila.Grupo</th>
+                            }
+                            <td><span class="currency">@fila.Moneda</span></td>
+                            <td class="numeric">@fila.Cantidad.ToString("N0")</td>
+                            <td class="numeric">@fila.Total.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? EncabezadoGrupo { get; set; }
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Fila> Filas { get; set; } = [];
+
+    public sealed record Fila(string? Grupo, string Moneda, int Cantidad, decimal Total);
+}

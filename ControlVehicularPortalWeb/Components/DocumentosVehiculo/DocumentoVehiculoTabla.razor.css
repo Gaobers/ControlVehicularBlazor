@@ -1,0 +1,142 @@
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.readings-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+}
+
+.readings-table thead {
+    background: #f8fafc;
+}
+
+.readings-table th {
+    text-align: left;
+    padding: 15px 20px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.readings-table tbody th,
+.readings-table td {
+    padding: 17px 20px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 13px;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.readings-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 11px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-inactive {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 7px;
+}
+
+.btn-details,
+.btn-edit,
+.btn-deactivate {
+    border: none;
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-details {
+    background: #eff6ff;
+    color: #0369a1;
+}
+
+.btn-details:hover {
+    background: #dbeafe;
+}
+
+.btn-edit {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.btn-edit:hover {
+    background: #fde68a;
+}
+
+.btn-deactivate {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.btn-deactivate:hover {
+    background: #fecaca;
+}
+
+.table-message {
+    margin: 0;
+    text-align: center;
+    padding: 55px 20px;
+    color: #64748b;
+}
+
+.row-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+@media (max-width: 600px) {
+    .readings-table th,
+    .readings-table td {
+        padding: 12px 14px;
+    }
+}
+
+.status-type {
+    background: #eff6ff;
+    color: #075985;
+}
+
+.btn-activate {
+    border: none;
+    border-radius: 7px;
+    padding: 9px 12px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.btn-activate:hover {
+    background: #bbf7d0;
+}

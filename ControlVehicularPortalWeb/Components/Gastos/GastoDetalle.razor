@@ -1,0 +1,66 @@
+@using ControlVehicular.DTO.Gastos
+
+<section class="details-card" aria-labelledby="titulo-detalle">
+    <div class="details-header">
+        <h2 id="titulo-detalle">Detalle del gasto #@Gasto.Id</h2>
+        <button type="button" class="btn-close-custom" @onclick="Cerrar">Cerrar</button>
+    </div>
+
+    <dl class="details-grid">
+        <div>
+            <dt>Vehículo</dt>
+            <dd>@Vehiculo</dd>
+        </div>
+        <div>
+            <dt>ID de categoría</dt>
+            <dd>#@Gasto.CategoriaId</dd>
+        </div>
+        <div>
+            <dt>Monto</dt>
+            <dd>@Gasto.Monto.ToString("N2") @(Gasto.Moneda ?? "Sin moneda")</dd>
+        </div>
+        <div>
+            <dt>Fecha</dt>
+            <dd>@Gasto.Fecha.ToString("dd/MM/yyyy")</dd>
+        </div>
+        <div>
+            <dt>Vigencia</dt>
+            <dd>@(Gasto.Activo ? "Activo" : "Inactivo")</dd>
+        </div>
+        <div>
+            <dt>Proveedor</dt>
+            <dd>@(Gasto.Proveedor ?? "Sin proveedor")</dd>
+        </div>
+        <div>
+            <dt>Número de comprobante</dt>
+            <dd>@(Gasto.NumeroComprobante ?? "Sin comprobante")</dd>
+        </div>
+        <div>
+            <dt>Descripción</dt>
+            <dd>@(Gasto.Descripcion ?? "Sin descripción")</dd>
+        </div>
+        <div>
+            <dt>Registrado por</dt>
+            <dd>@(Gasto.RegistradoPor?.ToString() ?? "Sin registro de usuario")</dd>
+        </div>
+        <div>
+            <dt>Fecha de registro</dt>
+            <dd>@(Gasto.FechaRegistro?.ToString("dd/MM/yyyy HH:mm") ?? "Sin fecha")</dd>
+        </div>
+        <div>
+            <dt>Última actualización</dt>
+            <dd>@(Gasto.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Sin fecha")</dd>
+        </div>
+    </dl>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public GastoSalidaDTO Gasto { get; set; } = default!;
+
+    [Parameter]
+    public string Vehiculo { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback Cerrar { get; set; }
+}

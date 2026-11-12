@@ -1,0 +1,30 @@
+<section class="deactivation-card" aria-labelledby="titulo-confirmacion">
+    <h2 id="titulo-confirmacion">Desactivar lectura #@LecturaId</h2>
+    <p>La lectura de @Vehiculo quedará inactiva y seguirá en el historial.</p>
+
+    <div class="confirmation-actions">
+        <button type="button" class="btn-confirm-deactivate" disabled="@Ocupado" @onclick="Confirmar">
+            Confirmar desactivación
+        </button>
+        <button type="button" class="btn-cancel" disabled="@Ocupado" @onclick="Cancelar">
+            Cancelar
+        </button>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public long LecturaId { get; set; }
+
+    [Parameter]
+    public string Vehiculo { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Confirmar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+}

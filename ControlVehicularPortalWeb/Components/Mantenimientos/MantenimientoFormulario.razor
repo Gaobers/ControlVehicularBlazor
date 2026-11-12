@@ -1,0 +1,117 @@
+@using ControlVehicular.DTO.Mantenimientos
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="maintenance-form-card" aria-labelledby="titulo-mantenimiento-formulario">
+    <header class="form-card-header">
+        <h2 id="titulo-mantenimiento-formulario">@Titulo</h2>
+        <p>Indica al menos una fecha o un kilometraje objetivo.</p>
+    </header>
+
+    <EditForm Model="Modelo" OnValidSubmit="Guardar" @key="Modelo">
+        <DataAnnotationsValidator />
+        <fieldset disabled="@Ocupado" class="maintenance-form-grid">
+            <div class="field-group">
+                <label for="mantenimiento-vehiculo">Vehículo</label>
+                <InputSelect id="mantenimiento-vehiculo" class="maintenance-input" @bind-Value="Modelo.VehiculoId">
+                    <option value="">Selecciona un vehículo</option>
+                    @foreach (var vehiculo in Vehiculos)
+                    {
+                        <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Modelo.VehiculoId" />
+            </div>
+            <div class="field-group">
+                <label for="mantenimiento-estado">Estado</label>
+                <InputSelect id="mantenimiento-estado" class="maintenance-input" @bind-Value="Modelo.Estado">
+                    <option value="">Selecciona un estado</option>
+                    @foreach (var estado in Enum.GetValues<EstadoMantenimiento>())
+                    {
+                        <option value="@estado">@estado</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Modelo.Estado" />
+            </div>
+            <div class="field-group field-wide">
+                <label for="mantenimiento-servicio">Servicio</label>
+                <InputText id="mantenimiento-servicio" class="maintenance-input" @bind-Value="Modelo.Servicio" />
+                <ValidationMessage For="() => Modelo.Servicio" />
+            </div>
+            <div class="field-group">
+                <label for="mantenimiento-fecha-objetivo">Fecha objetivo</label>
+                <InputDate id="mantenimiento-fecha-objetivo" class="maintenance-input"
+                           @bind-Value="Modelo.FechaObjetivo" />
+                <ValidationMessage For="() => Modelo.FechaObjetivo" />
+            </div>
+            <div class="field-group">
+                <label for="mantenimiento-km-objetivo">Kilometraje objetivo (km)</label>
+                <InputNumber id="mantenimiento-km-objetivo" class="maintenance-input" min="0" step="any"
+                             @bind-Value="Modelo.KilometrajeObjetivo" />
+                <ValidationMessage For="() => Modelo.KilometrajeObjetivo" />
+            </div>
+
+            @if (Modelo is MantenimientoGuardarDTO alta)
+            {
+                <div class="field-group field-wide">
+                    <label for="mantenimiento-origen">Mantenimiento de origen (opcional)</label>
+                    <InputSelect id="mantenimiento-origen" class="maintenance-input" @bind-Value="alta.MantenimientoOrigenId">
+                        <option value="">Sin mantenimiento de origen</option>
+                        @foreach (var origen in Origenes)
+                        {
+                            <option value="@origen.Id">#@origen.Id · @origen.Servicio · @NombreVehiculo(origen.VehiculoId)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="field-group">
+                    <label for="mantenimiento-fecha-realizacion">Fecha de realización (opcional)</label>
+                    <InputDate id="mantenimiento-fecha-realizacion" class="maintenance-input"
+                               @bind-Value="alta.FechaRealizacion" />
+                    <ValidationMessage For="() => alta.FechaRealizacion" />
+                </div>
+                <div class="field-group">
+                    <label for="mantenimiento-km-realizacion">Kilometraje de realización (opcional)</label>
+                    <InputNumber id="mantenimiento-km-realizacion" class="maintenance-input" min="0" step="any"
+                                 @bind-Value="alta.KilometrajeRealizacion" />
+                    <ValidationMessage For="() => alta.KilometrajeRealizacion" />
+                </div>
+                <div class="field-group field-wide">
+                    <label for="mantenimiento-observaciones">Observaciones (opcional)</label>
+                    <InputTextArea id="mantenimiento-observaciones" class="maintenance-input"
+                                   @bind-Value="alta.Observaciones" />
+                </div>
+            }
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary-custom">Guardar mantenimiento</button>
+                <button type="button" class="btn-cancel" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </fieldset>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public MantenimientoEntradaDTO Modelo { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<MantenimientoSalidaDTO> Origenes { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public Func<long, string> NombreVehiculo { get; set; } = default!;
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Guardar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+
+    private string Titulo => Modelo is MantenimientoModificarDTO edicion
+        ? $"Editar mantenimiento #{edicion.Id}"
+        : "Registrar mantenimiento";
+}

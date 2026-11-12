@@ -1,8 +1,102 @@
-﻿@page "/"
+@page "/"
 @attribute [Authorize]
+@using ControlVehicular.DTO.Mantenimientos
+@using ControlVehicular.DTO.Vehiculos
+@using ControlVehicularPortalWeb.Components.Dashboard
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Panel de control | Control Vehicular</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="dashboard">
+    <header class="dashboard-header">
+        <div>
+            <span class="dashboard-label">CONTROL VEHICULAR</span>
+            <h1>Panel de control</h1>
+            <p>Consulta el estado de la flota y accede a los módulos del portal.</p>
+        </div>
 
-Welcome to your new app.
+        <button type="button" class="dashboard-refresh" disabled="@(actualizando || vehiculos.Cargando)" @onclick="ActualizarAsync">
+            @(actualizando ? "Actualizando…" : "Actualizar datos")
+        </button>
+    </header>
+
+    <div class="dashboard-grid">
+        <DashboardPanel Titulo="Vehículos" Cargando="vehiculos.Cargando" Error="@vehiculos.Error">
+            @if (vehiculos.Datos is { } lista)
+            {
+                <dl class="dashboard-indicadores">
+                    <div>
+                        <dt>Registrados</dt>
+                        <dd>@lista.Count.ToString("N0")</dd>
+                    </div>
+                    <div>
+                        <dt>Activos</dt>
+                        <dd>@lista.Count(item => item.Estado == EstadoVehiculo.ACTIVO).ToString("N0")</dd>
+                    </div>
+                </dl>
+            }
+        </DashboardPanel>
+
+        <DashboardPanel Titulo="Mantenimientos activos" Cargando="mantenimientos.Cargando" Error="@mantenimientos.Error">
+            @if (mantenimientos.Datos is { } lista)
+            {
+                <dl class="dashboard-indicadores">
+                    <div>
+                        <dt>Pendientes</dt>
+                        <dd>@lista.Count(item => item.Activo && item.Estado == EstadoMantenimiento.PENDIENTE).ToString("N0")</dd>
+                    </div>
+                    <div>
+                        <dt>Próximos</dt>
+                        <dd>@lista.Count(item => item.Activo && item.Estado == EstadoMantenimiento.PROXIMO).ToString("N0")</dd>
+                    </div>
+                    <div>
+                        <dt>Vencidos</dt>
+                        <dd>@lista.Count(item => item.Activo && item.Estado == EstadoMantenimiento.VENCIDO).ToString("N0")</dd>
+                    </div>
+                    <div>
+                        <dt>Realizados</dt>
+                        <dd>@lista.Count(item => item.Activo && item.Estado == EstadoMantenimiento.REALIZADO).ToString("N0")</dd>
+                    </div>
+                </dl>
+            }
+        </DashboardPanel>
+
+        <DashboardPanel Titulo="Recordatorios" Cargando="recordatorios.Cargando" Error="@recordatorios.Error">
+            @if (recordatorios.Datos is { } lista)
+            {
+                <dl class="dashboard-indicadores">
+                    <div>
+                        <dt>Configuraciones activas</dt>
+                        <dd>@lista.Count(item => item.Activo).ToString("N0")</dd>
+                    </div>
+                </dl>
+            }
+        </DashboardPanel>
+
+        <DashboardPanel Titulo="Documentos vehiculares" Cargando="documentos.Cargando" Error="@documentos.Error">
+            @if (documentos.Datos is { } lista)
+            {
+                <dl class="dashboard-indicadores">
+                    <div>
+                        <dt>Activos</dt>
+                        <dd>@lista.Count(item => item.Activo).ToString("N0")</dd>
+                    </div>
+                    <div>
+                        <dt>Activos con fecha de vencimiento</dt>
+                        <dd>@lista.Count(item => item.Activo && item.FechaVencimiento.HasValue).ToString("N0")</dd>
+                    </div>
+                </dl>
+            }
+        </DashboardPanel>
+
+        <div class="dashboard-gastos">
+            <DashboardPanel Titulo="Estadísticas de gastos" Cargando="gastos.Cargando" Error="@gastos.Error">
+                @if (gastos.Datos is { } resultado)
+                {
+                    <DashboardGastos Resultado="resultado" />
+                }
+            </DashboardPanel>
+        </div>
+    </div>
+
+    <DashboardAccesosRapidos />
+</div>

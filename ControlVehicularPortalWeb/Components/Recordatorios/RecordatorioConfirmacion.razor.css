@@ -1,0 +1,73 @@
+.btn-cancel {
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #475569;
+    border-radius: 8px;
+    padding: 11px 19px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #f8fafc;
+}
+
+.deactivation-card {
+    background: white;
+    border: 1px solid #fecaca;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 28px;
+}
+
+.deactivation-card h2 {
+    color: #991b1b;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 13px;
+}
+
+.deactivation-card p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.btn-confirm-deactivate {
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 19px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.btn-confirm-deactivate:hover {
+    background: #b91c1c;
+}
+
+.confirmation-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .confirmation-actions {
+        flex-direction: column;
+    }
+
+    .confirmation-actions button {
+        width: 100%;
+    }
+}

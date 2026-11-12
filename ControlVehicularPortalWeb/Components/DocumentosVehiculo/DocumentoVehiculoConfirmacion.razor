@@ -1,0 +1,35 @@
+@using ControlVehicular.DTO.DocumentosVehiculo
+
+<section class="confirmation-card @(Documento.Activo ? "deactivation-card" : "activation-card")"
+         aria-labelledby="titulo-confirmacion">
+    <h2 id="titulo-confirmacion">@Accion documento #@Documento.Id</h2>
+    <p>El documento de @Vehiculo quedará @(Documento.Activo ? "inactivo" : "activo").</p>
+
+    <div class="confirmation-actions">
+        <button type="button" class="btn-confirm" disabled="@Ocupado" @onclick="Confirmar">
+            Confirmar
+        </button>
+        <button type="button" class="btn-cancel" disabled="@Ocupado" @onclick="Cancelar">
+            Cancelar
+        </button>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public DocumentoVehiculoResponse Documento { get; set; } = default!;
+
+    [Parameter]
+    public string Vehiculo { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Confirmar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+
+    private string Accion => Documento.Activo ? "Desactivar" : "Activar";
+}

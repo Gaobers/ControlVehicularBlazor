@@ -1,0 +1,74 @@
+@using ControlVehicular.DTO.Mantenimientos
+
+<section class="details-card" aria-labelledby="titulo-detalle">
+    <div class="details-header">
+        <h2 id="titulo-detalle">Detalle del mantenimiento #@Mantenimiento.Id</h2>
+        <button type="button" class="btn-close-custom" @onclick="Cerrar">Cerrar</button>
+    </div>
+
+    <dl class="details-grid">
+        <div>
+            <dt>Vehículo</dt>
+            <dd>@Vehiculo</dd>
+        </div>
+        <div>
+            <dt>Servicio</dt>
+            <dd>@Mantenimiento.Servicio</dd>
+        </div>
+        <div>
+            <dt>Estado</dt>
+            <dd>@Mantenimiento.Estado</dd>
+        </div>
+        <div>
+            <dt>Vigencia</dt>
+            <dd>@(Mantenimiento.Activo ? "Activo" : "Inactivo")</dd>
+        </div>
+        <div>
+            <dt>Fecha objetivo</dt>
+            <dd>@(Mantenimiento.FechaObjetivo?.ToString("dd/MM/yyyy") ?? "Sin fecha")</dd>
+        </div>
+        <div>
+            <dt>Kilometraje objetivo (km)</dt>
+            <dd>@(Mantenimiento.KilometrajeObjetivo?.ToString("N1") ?? "Sin kilometraje")</dd>
+        </div>
+        <div>
+            <dt>Fecha de realización</dt>
+            <dd>@(Mantenimiento.FechaRealizacion?.ToString("dd/MM/yyyy") ?? "Sin fecha")</dd>
+        </div>
+        <div>
+            <dt>Kilometraje de realización (km)</dt>
+            <dd>@(Mantenimiento.KilometrajeRealizacion?.ToString("N1") ?? "Sin kilometraje")</dd>
+        </div>
+        <div>
+            <dt>Mantenimiento de origen</dt>
+            <dd>@(Mantenimiento.MantenimientoOrigenId?.ToString() ?? "Sin origen")</dd>
+        </div>
+        <div>
+            <dt>Creado por</dt>
+            <dd>@(Mantenimiento.CreadoPor?.ToString() ?? "Sin registro de usuario")</dd>
+        </div>
+        <div>
+            <dt>Fecha de creación</dt>
+            <dd>@(Mantenimiento.FechaCreacion?.ToString("dd/MM/yyyy HH:mm") ?? "Sin fecha")</dd>
+        </div>
+        <div>
+            <dt>Última actualización</dt>
+            <dd>@(Mantenimiento.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Sin fecha")</dd>
+        </div>
+        <div>
+            <dt>Observaciones</dt>
+            <dd>@(Mantenimiento.Observaciones ?? "Sin observaciones")</dd>
+        </div>
+    </dl>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public MantenimientoSalidaDTO Mantenimiento { get; set; } = default!;
+
+    [Parameter]
+    public string Vehiculo { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback Cerrar { get; set; }
+}

@@ -1,0 +1,115 @@
+@using ControlVehicular.DTO.Gastos
+@using ControlVehicular.DTO.Vehiculos
+
+<section class="expense-form-card" aria-labelledby="titulo-gasto-formulario">
+    <header class="form-card-header">
+        <h2 id="titulo-gasto-formulario">@Titulo</h2>
+        <p>Registra el importe y los datos del gasto asociado al vehículo.</p>
+    </header>
+
+    @if (Vehiculos.Count == 0)
+    {
+        <p role="status">No hay vehículos disponibles para guardar este gasto.</p>
+    }
+
+    <EditForm Model="Modelo" OnValidSubmit="Guardar" @key="Modelo">
+        <DataAnnotationsValidator />
+        <fieldset disabled="@(Ocupado || Vehiculos.Count == 0)" class="expense-form-grid">
+            <div class="field-group">
+                <label for="gasto-vehiculo">Vehículo</label>
+                <InputSelect id="gasto-vehiculo" class="expense-input" @bind-Value="Modelo.VehiculoId">
+                    <option value="">Selecciona un vehículo</option>
+                    @foreach (var vehiculo in Vehiculos)
+                    {
+                        <option value="@vehiculo.Id">@vehiculo.Marca @vehiculo.Modelo · @vehiculo.Placa</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Modelo.VehiculoId" />
+            </div>
+            <div class="field-group">
+                <label for="gasto-categoria">ID de categoría</label>
+                <InputNumber id="gasto-categoria" class="expense-input" min="1" step="1"
+                             aria-describedby="gasto-categoria-ayuda" @bind-Value="Modelo.CategoriaId" />
+                <small id="gasto-categoria-ayuda">Ingresa el ID de una categoría existente en Java.</small>
+                <ValidationMessage For="() => Modelo.CategoriaId" />
+            </div>
+            <div class="field-group">
+                <label for="gasto-monto">Monto</label>
+                <InputNumber id="gasto-monto" class="expense-input" min="0.01" step="any"
+                             @bind-Value="Modelo.Monto" />
+                <ValidationMessage For="() => Modelo.Monto" />
+            </div>
+            <div class="field-group">
+                <label for="gasto-moneda">Moneda (opcional)</label>
+                <InputText id="gasto-moneda" class="expense-input" maxlength="3"
+                           aria-describedby="gasto-moneda-ayuda" @bind-Value="Modelo.Moneda" />
+                <small id="gasto-moneda-ayuda">Usa tres letras. Si dejas el campo vacío, Java aplica USD.</small>
+                <ValidationMessage For="() => Modelo.Moneda" />
+            </div>
+            <div class="field-group">
+                <label for="gasto-fecha">Fecha</label>
+                <InputDate id="gasto-fecha" class="expense-input" @bind-Value="Modelo.Fecha" />
+                <ValidationMessage For="() => Modelo.Fecha" />
+            </div>
+            @if (Modelo is GastoModificarDTO edicion)
+            {
+                <div class="field-group">
+                    <label for="gasto-activo">Vigencia</label>
+                    <InputSelect id="gasto-activo" class="expense-input" @bind-Value="edicion.Activo">
+                        <option value="">Selecciona la vigencia</option>
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </InputSelect>
+                    <ValidationMessage For="() => edicion.Activo" />
+                </div>
+            }
+            <div class="field-group">
+                <label for="gasto-proveedor">Proveedor (opcional)</label>
+                <InputText id="gasto-proveedor" class="expense-input" maxlength="150"
+                           @bind-Value="Modelo.Proveedor" />
+                <ValidationMessage For="() => Modelo.Proveedor" />
+            </div>
+            <div class="field-group">
+                <label for="gasto-comprobante">Número de comprobante (opcional)</label>
+                <InputText id="gasto-comprobante" class="expense-input" maxlength="100"
+                           @bind-Value="Modelo.NumeroComprobante" />
+                <ValidationMessage For="() => Modelo.NumeroComprobante" />
+            </div>
+            <div class="field-group field-wide">
+                <label for="gasto-descripcion">Descripción (opcional)</label>
+                <InputTextArea id="gasto-descripcion" class="expense-input" @bind-Value="Modelo.Descripcion" />
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary-custom"
+                    disabled="@(Ocupado || Vehiculos.Count == 0)">
+                Guardar gasto
+            </button>
+            <button type="button" class="btn-cancel" disabled="@Ocupado" @onclick="Cancelar">
+                Cancelar
+            </button>
+        </div>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public GastoEntradaDTO Modelo { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<VehiculoSalidaDTO> Vehiculos { get; set; } = [];
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Guardar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+
+    private string Titulo => Modelo is GastoModificarDTO edicion
+        ? $"Editar gasto #{edicion.Id}"
+        : "Registrar gasto";
+}

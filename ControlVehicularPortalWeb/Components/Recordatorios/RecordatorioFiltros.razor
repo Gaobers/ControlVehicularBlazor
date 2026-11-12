@@ -1,0 +1,30 @@
+<div class="filtros">
+    <div>
+        <label for="recordatorio-vigencia">Vigencia</label>
+        <select id="recordatorio-vigencia" class="filter-select" disabled="@Ocupado"
+                @bind:get="Vigencia" @bind:set="CambiarAsync">
+            <option value="">Todos los recordatorios</option>
+            <option value="true">Activos</option>
+            <option value="false">Inactivos</option>
+        </select>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public bool? Activo { get; set; }
+
+    [Parameter]
+    public EventCallback<bool?> ActivoChanged { get; set; }
+
+    private string Vigencia => Activo?.ToString().ToLowerInvariant() ?? string.Empty;
+
+    private Task CambiarAsync(string valor)
+    {
+        bool? activo = bool.TryParse(valor, out var resultado) ? resultado : null;
+        return ActivoChanged.InvokeAsync(activo);
+    }
+}

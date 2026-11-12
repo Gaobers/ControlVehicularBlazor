@@ -32,6 +32,41 @@ builder.Services.AddHttpClient("JavaApi", client =>
 });
 
 
+// API .NET. La configuración se resuelve al solicitar el cliente.
+builder.Services.AddHttpClient("NetApi", client =>
+{
+    var baseUrl = builder.Configuration["Apis:NetBaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(baseUrl))
+    {
+        throw new InvalidOperationException(
+            "Falta configurar Apis:NetBaseUrl para la API .NET.");
+    }
+
+    if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var destino) ||
+        destino.Scheme != Uri.UriSchemeHttps ||
+        !string.IsNullOrEmpty(destino.UserInfo) ||
+        !string.IsNullOrEmpty(destino.Query) ||
+        !string.IsNullOrEmpty(destino.Fragment))
+    {
+        throw new InvalidOperationException(
+            "Apis:NetBaseUrl debe ser una URL HTTPS absoluta, sin credenciales ni parámetros.");
+    }
+
+    client.BaseAddress = new Uri(destino.AbsoluteUri.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(120);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    AllowAutoRedirect = false,
+    UseCookies = false
+})
+.RedactLoggedHeaders(_ => true);
+
+builder.Services.AddScoped<NetApiService>();
+builder.Services.AddScoped<DocumentoVehiculoService>();
+builder.Services.AddScoped<EstadisticasGastosService>();
+
 // ==========================================
 // REGISTRO DE SERVICIOS
 // ==========================================
@@ -78,6 +113,10 @@ builder.Services.AddScoped<AuthService>();
 
 // Gestión de vehículos
 builder.Services.AddScoped<VehiculoService>();
+builder.Services.AddScoped<KilometrajeService>();
+builder.Services.AddScoped<MantenimientoService>();
+builder.Services.AddScoped<RecordatorioService>();
+builder.Services.AddScoped<GastoService>();
 
 
 // ==========================================

@@ -1,0 +1,88 @@
+@using ControlVehicular.DTO.Recordatorios
+@using ControlVehicular.DTO.Mantenimientos
+
+<section class="maintenance-form-card" aria-labelledby="titulo-recordatorio-formulario">
+    <header class="form-card-header">
+        <h2 id="titulo-recordatorio-formulario">@Titulo</h2>
+        @if (Modelo is RecordatorioGuardarDTO)
+        {
+            <p>Si dejas una anticipación vacía, Java aplicará 15 días o 500 km, según el campo omitido.</p>
+        }
+        else
+        {
+            <p>Indica ambas anticipaciones. Puedes usar cero.</p>
+        }
+    </header>
+
+    @if (Mantenimientos.Count == 0)
+    {
+        <p role="status">No hay mantenimientos disponibles para guardar este recordatorio.</p>
+    }
+
+    <EditForm Model="Modelo" OnValidSubmit="Guardar" @key="Modelo">
+        <DataAnnotationsValidator />
+        <fieldset disabled="@(Ocupado || Mantenimientos.Count == 0)" class="maintenance-form-grid">
+            <div class="field-group field-wide">
+                <label for="recordatorio-mantenimiento">Mantenimiento</label>
+                <InputSelect id="recordatorio-mantenimiento" class="maintenance-input"
+                             @bind-Value="Modelo.MantenimientoId">
+                    <option value="">Selecciona un mantenimiento</option>
+                    @foreach (var mantenimiento in Mantenimientos)
+                    {
+                        <option value="@mantenimiento.Id">@NombreMantenimiento(mantenimiento.Id)</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Modelo.MantenimientoId" />
+            </div>
+            <div class="field-group">
+                <label for="recordatorio-dias">Días de anticipación</label>
+                <InputNumber id="recordatorio-dias" class="maintenance-input" min="@MinimoAnticipacion" step="1"
+                             @bind-Value="Modelo.DiasAnticipacion" />
+                <ValidationMessage For="() => Modelo.DiasAnticipacion" />
+            </div>
+            <div class="field-group">
+                <label for="recordatorio-km">Kilómetros de anticipación</label>
+                <InputNumber id="recordatorio-km" class="maintenance-input" min="@MinimoAnticipacion" step="any"
+                             @bind-Value="Modelo.KilometrosAnticipacion" />
+                <ValidationMessage For="() => Modelo.KilometrosAnticipacion" />
+            </div>
+
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary-custom"
+                    disabled="@(Ocupado || Mantenimientos.Count == 0)">
+                Guardar recordatorio
+            </button>
+            <button type="button" class="btn-cancel" disabled="@Ocupado" @onclick="Cancelar">
+                Cancelar
+            </button>
+        </div>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public RecordatorioEntradaDTO Modelo { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<MantenimientoSalidaDTO> Mantenimientos { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public Func<long, string> NombreMantenimiento { get; set; } = default!;
+
+    [Parameter]
+    public bool Ocupado { get; set; }
+
+    [Parameter]
+    public EventCallback Guardar { get; set; }
+
+    [Parameter]
+    public EventCallback Cancelar { get; set; }
+
+    private int? MinimoAnticipacion => Modelo is RecordatorioModificarDTO ? 0 : null;
+
+    private string Titulo => Modelo is RecordatorioModificarDTO edicion
+        ? $"Editar recordatorio #{edicion.Id}"
+        : "Registrar recordatorio";
+}

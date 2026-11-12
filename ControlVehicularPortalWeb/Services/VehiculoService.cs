@@ -1,8 +1,9 @@
-﻿
+
 using ControlVehicular.DTO.Vehiculos;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace ControlVehicular.Services
 {
@@ -51,38 +52,93 @@ namespace ControlVehicular.Services
                 solicitud.Content = JsonContent.Create(datos);
             }
 
-            var respuesta = await cliente.SendAsync(solicitud);
+            HttpResponseMessage respuesta;
+
+            try
+            {
+                respuesta = await cliente.SendAsync(solicitud);
+            }
+            catch (HttpRequestException)
+            {
+                throw new HttpRequestException("No se pudo conectar con la API de vehículos.");
+            }
+            catch (TaskCanceledException)
+            {
+                throw new TimeoutException("La API de vehículos tardó demasiado en responder.");
+            }
 
             if (!respuesta.IsSuccessStatusCode)
             {
-                var estado = respuesta.StatusCode;
-
-                respuesta.Dispose();
-
-                if (estado == HttpStatusCode.Unauthorized)
+                using (respuesta)
                 {
-                    await _authService.InvalidarSesionAsync();
-                    throw new UnauthorizedAccessException(
-                        "Tu sesión no es válida o ha expirado.");
-                }
+                    if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        await _authService.InvalidarSesionAsync();
+                        throw new UnauthorizedAccessException("Tu sesión no es válida o ha expirado.");
+                    }
 
-                if (estado == HttpStatusCode.Forbidden)
-                {
-                    throw new InvalidOperationException(
-                        "No tienes permisos para realizar esta operación.");
-                }
+                    if (respuesta.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        throw new InvalidOperationException("No tienes permisos para realizar esta operación.");
+                    }
 
-                if (estado == HttpStatusCode.NotFound)
-                {
-                    throw new KeyNotFoundException(
-                        "No se encontró el recurso solicitado.");
-                }
+                    if (respuesta.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        var mensaje = await ObtenerMensajeNegocioAsync(respuesta)
+                            ?? "La API rechazó los datos del vehículo. Revisa el formulario.";
+                        throw new InvalidOperationException(mensaje);
+                    }
 
-                throw new HttpRequestException(
-                    $"La API devolvió un error HTTP {(int)estado}.");
+                    if (respuesta.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        var mensaje = await ObtenerMensajeNegocioAsync(respuesta)
+                            ?? "No se encontró el vehículo solicitado.";
+                        throw new KeyNotFoundException(mensaje);
+                    }
+
+                    throw new HttpRequestException(
+                        "La API de vehículos presentó un error. Intenta nuevamente.",
+                        null,
+                        respuesta.StatusCode);
+                }
             }
 
             return respuesta;
+        }
+
+        private static async Task<string?> ObtenerMensajeNegocioAsync(HttpResponseMessage respuesta)
+        {
+            try
+            {
+                using var documento = JsonDocument.Parse(await respuesta.Content.ReadAsStringAsync());
+                var raiz = documento.RootElement;
+
+                if (raiz.ValueKind != JsonValueKind.Object ||
+                    !raiz.TryGetProperty("exito", out var exito) ||
+                    exito.ValueKind != JsonValueKind.False ||
+                    !raiz.TryGetProperty("mensaje", out var mensaje) ||
+                    mensaje.ValueKind != JsonValueKind.String)
+                {
+                    return null;
+                }
+
+                var texto = mensaje.GetString()?.Trim();
+                if (string.IsNullOrWhiteSpace(texto) || texto.Length > 500 ||
+                    texto.Contains('<') || texto.Contains('>') ||
+                    texto.Contains('\n') || texto.Contains('\r') ||
+                    texto.Contains("Exception", StringComparison.OrdinalIgnoreCase) ||
+                    texto.Contains("stacktrace", StringComparison.OrdinalIgnoreCase) ||
+                    texto.Contains(" at ", StringComparison.OrdinalIgnoreCase))
+                {
+                    return null;
+                }
+
+                return texto;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
 
         // ==========================================

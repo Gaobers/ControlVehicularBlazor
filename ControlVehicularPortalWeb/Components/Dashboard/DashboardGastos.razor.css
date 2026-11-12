@@ -1,0 +1,44 @@
+.gastos-cantidad,
+.gastos-vacio {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+}
+
+.gastos-cantidad strong {
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 750;
+}
+
+.gastos-vacio {
+    margin-top: 12px;
+}
+
+.gastos-monedas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+    gap: 12px;
+    margin: 16px 0 0;
+}
+
+.gastos-monedas div {
+    padding: 12px 14px;
+    border-radius: 9px;
+    background: #eff6ff;
+}
+
+.gastos-monedas dt {
+    color: #075985;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.gastos-monedas dd {
+    margin: 4px 0 0;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
